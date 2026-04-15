@@ -4,12 +4,7 @@ services:
     image: aslamsys/mordomo-iot-orchestrator:latest
     container_name: mordomo-iot-orchestrator
     restart: unless-stopped
-    environment:
-      NATS_URL:      nats://nats:4222
-      MQTT_BROKER:   mqtt://mqtt-broker:1883
-      MQTT_USER:     ${MQTT_USER:-orchestrator}
-      MQTT_PASSWORD: ${MQTT_PASSWORD:?MQTT_PASSWORD is required}
-      REDIS_URL:     redis://redis:6379/2
+    env_file: .env
     networks:
       - mordomo-net
       - iot-net

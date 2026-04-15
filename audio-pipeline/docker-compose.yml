@@ -4,7 +4,7 @@ services:
     image: aslamsys/mordomo-audio-capture-vad:latest
     container_name: mordomo-audio-capture-vad
     restart: unless-stopped
-    env_file: ./mordomo-audio-capture-vad/.env
+    env_file: .env
     devices:
       - /dev/snd:/dev/snd
     group_add:
@@ -21,7 +21,7 @@ services:
     image: aslamsys/mordomo-wake-word-detector:latest
     container_name: mordomo-wake-word-detector
     restart: unless-stopped
-    env_file: ./mordomo-wake-word-detector/.env
+    env_file: .env
     networks:
       - mordomo-net
     deploy:
@@ -34,7 +34,7 @@ services:
     image: aslamsys/mordomo-source-separation:latest
     container_name: mordomo-source-separation
     restart: unless-stopped
-    env_file: ./mordomo-source-separation/.env
+    env_file: .env
     networks:
       - mordomo-net
     deploy:
@@ -47,7 +47,7 @@ services:
     image: aslamsys/mordomo-speaker-verification:latest
     container_name: mordomo-speaker-verification
     restart: unless-stopped
-    env_file: ./mordomo-speaker-verification/.env
+    env_file: .env
     volumes:
       - speaker-profiles:/app/profiles
     networks:
@@ -62,7 +62,7 @@ services:
     image: aslamsys/mordomo-whisper-asr:latest
     container_name: mordomo-whisper-asr
     restart: unless-stopped
-    env_file: ./mordomo-whisper-asr/.env
+    env_file: .env
     volumes:
       - whisper-models:/app/models
     networks:
@@ -77,7 +77,7 @@ services:
     image: aslamsys/mordomo-speaker-id-diarization:latest
     container_name: mordomo-speaker-id-diarization
     restart: unless-stopped
-    env_file: ./mordomo-speaker-id-diarization/.env
+    env_file: .env
     volumes:
       - speaker-profiles:/app/profiles
     networks:
@@ -92,7 +92,7 @@ services:
     image: aslamsys/mordomo-tts-engine:latest
     container_name: mordomo-tts-engine
     restart: unless-stopped
-    env_file: ./mordomo-tts-engine/.env
+    env_file: .env
     volumes:
       - tts-models:/app/models
     networks:
@@ -107,7 +107,7 @@ services:
     image: aslamsys/mordomo-audio-bridge:latest
     container_name: mordomo-audio-bridge
     restart: unless-stopped
-    env_file: ./mordomo-audio-bridge/.env
+    env_file: .env
     devices:
       - /dev/snd:/dev/snd
     group_add:
@@ -124,7 +124,7 @@ services:
     image: aslamsys/mordomo-visual-feedback:latest
     container_name: mordomo-visual-feedback
     restart: unless-stopped
-    env_file: ./mordomo-visual-feedback/.env
+    env_file: .env
     privileged: true        # acesso a GPIO/LED
     networks:
       - mordomo-net
