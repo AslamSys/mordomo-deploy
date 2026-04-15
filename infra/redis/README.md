@@ -28,7 +28,35 @@ Cache em memória de alta performance para acelerar consultas, armazenar sessõe
 
 ---
 
-## 🔧 Tecnologias
+## �️ Alocação de DBs
+
+Redis suporta 16 databases (db0–db15). Registre aqui toda nova alocação antes de usar.
+
+| DB  | Serviço                    | Conteúdo                                              |
+|-----|----------------------------|-------------------------------------------------------|
+| db0 | `mordomo-people`           | Cache de perfis, sessões de identificação             |
+| db1 | `mordomo-brain` / geral    | Sessões de conversa ativas, contexto LLM              |
+| db2 | `mordomo-iot-state-cache`  | Estado atual dos dispositivos IoT                     |
+| db3 | `mordomo-visual-feedback`  | Regras visuais registradas por serviço (persistente)  |
+| db4 | *(reservado)*              | —                                                     |
+| … | *(livre)*                  | —                                                     |
+
+> **Regra:** nunca use um DB sem registrar aqui primeiro. Assim evitamos colisão de keys entre serviços.
+
+### Estrutura de keys — db3 (visual-feedback)
+
+```
+vfb:rules:{service_name}   →  Hash com as regras visuais do serviço (JSON)
+```
+
+Exemplo:
+```bash
+redis-cli -n 3 HGETALL "vfb:rules:wake-word-detector"
+```
+
+---
+
+## �🔧 Tecnologias
 
 **Stack:** Redis 7.x
 
