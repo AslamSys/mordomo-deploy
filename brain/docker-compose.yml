@@ -69,24 +69,23 @@ services:
           cpus: "0.1"
           memory: 64M
 
-  mordomo-openclaw-agent:
-    image: openclaw/openclaw:latest
-    container_name: mordomo-openclaw-agent
-    restart: unless-stopped
-    volumes:
-      - ./mordomo-openclaw-agent/openclaw.json:/home/node/.openclaw/openclaw.json:ro
-      - openclaw-workspace:/home/node/.openclaw/workspace
-    environment:
-      LITELLM_MASTER_KEY:      ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
-      OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
-    networks:
-      - mordomo-net
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 512M
-
+#  mordomo-openclaw-agent:
+#    image: openclaw/openclaw:latest
+#    container_name: mordomo-openclaw-agent
+#    restart: unless-stopped
+#    volumes:
+#      - ./mordomo-openclaw-agent/openclaw.json:/home/node/.openclaw/openclaw.json:ro
+#      - openclaw-workspace:/home/node/.openclaw/workspace
+#    environment:
+#      LITELLM_MASTER_KEY:      ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+#      OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
+#    networks:
+#      - mordomo-net
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "0.5"
+#          memory: 512M
 volumes:
   vault-data:
   openclaw-workspace:
