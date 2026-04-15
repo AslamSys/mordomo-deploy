@@ -43,21 +43,20 @@ services:
           cpus: "1.0"
           memory: 512M
 
-  mordomo-speaker-verification:
-    image: renaneunao/mordomo-speaker-verification:latest
-    container_name: mordomo-speaker-verification
-    restart: unless-stopped
-    env_file: .env
-    volumes:
-      - speaker-profiles:/app/profiles
-    networks:
-      - mordomo-net
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
-
+#  mordomo-speaker-verification:
+#    image: renaneunao/mordomo-speaker-verification:latest
+#    container_name: mordomo-speaker-verification
+#    restart: unless-stopped
+#    env_file: .env
+#    volumes:
+#      - speaker-profiles:/app/profiles
+#    networks:
+#      - mordomo-net
+#    deploy:
+#      resources:
+#        limits:
+#          cpus: "0.5"
+#          memory: 256M
   mordomo-whisper-asr:
     image: renaneunao/mordomo-whisper-asr:latest
     container_name: mordomo-whisper-asr

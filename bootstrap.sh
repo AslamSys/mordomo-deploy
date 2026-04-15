@@ -108,9 +108,9 @@ if [[ "$GROUP" == "all" || "$GROUP" == "audio-pipeline" ]]; then
   deploy_group "audio-pipeline" "audio-pipeline/docker-compose.yml"
 fi
 
-if [[ "$GROUP" == "all" || "$GROUP" == "financas" ]]; then
-  deploy_group "financas" "financas/docker-compose.yml"
-fi
+#if [[ "$GROUP" == "all" || "$GROUP" == "financas" ]]; then
+#  deploy_group "financas" "financas/docker-compose.yml"
+#fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "brain" ]]; then
   deploy_group "brain" "brain/docker-compose.yml"
