@@ -21,9 +21,10 @@ CREATE TABLE IF NOT EXISTS people.pessoas (
     face_profile_id  TEXT,                               -- ref: seguranca-face-recognition
     is_owner         BOOLEAN     NOT NULL DEFAULT FALSE,
     created_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    CONSTRAINT pessoas_name_unique UNIQUE (lower(name))
+    updated_at       TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_pessoas_name_unique ON people.pessoas (lower(name));
 
 -- Contatos (chaves PIX, emails, telefones) — value_enc criptografado com AES-256-GCM
 CREATE TABLE IF NOT EXISTS people.contatos (
