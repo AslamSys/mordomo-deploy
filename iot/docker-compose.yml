@@ -41,5 +41,4 @@ networks:
   mordomo-net:
     external: true
   iot-net:
-    name: iot-net
-    driver: bridge
+    external: true
