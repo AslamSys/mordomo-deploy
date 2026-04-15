@@ -84,7 +84,7 @@ wait_healthy() {
   local container="$1"
   local check_cmd="$2"
   echo "    waiting for $container..."
-  until docker exec "$container" sh -c "$check_cmd" >/dev/null 2>&1; do
+  until docker exec "$container" $check_cmd >/dev/null 2>&1; do
     sleep 2
   done
   echo "    $container is ready"
