@@ -59,6 +59,17 @@ for net in mordomo-net iot-net; do
     && echo "  network $net created"
 done
 
+# ── Docker Hub login (para pull de imagens privadas) ──────────
+if [ -n "${DOCKERHUB_TOKEN:-}" ] && [ -n "${DOCKERHUB_USERNAME:-}" ]; then
+  echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  echo "  Docker Hub login OK"
+elif docker info 2>/dev/null | grep -q "Username"; then
+  echo "  Docker Hub already authenticated"
+else
+  echo "  AVISO: Sem login no Docker Hub (rate limits podem aplicar)"
+  echo "  Para autenticar, defina DOCKERHUB_USERNAME e DOCKERHUB_TOKEN"
+fi
+
 # ── Helper ────────────────────────────────────────────────────
 deploy_group() {
   local name="$1"

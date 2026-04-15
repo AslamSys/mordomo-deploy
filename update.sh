@@ -40,6 +40,12 @@ echo "==> Atualizando deploy repo..."
 git pull --quiet
 echo "    ok"
 
+# ── Docker Hub login ──────────────────────────────────────────
+if [ -n "${DOCKERHUB_TOKEN:-}" ] && [ -n "${DOCKERHUB_USERNAME:-}" ]; then
+  echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+  echo "    Docker Hub login OK"
+fi
+
 # ── Função de update ─────────────────────────────────────────
 update_group() {
   local name="$1"

@@ -1,7 +1,7 @@
 services:
 
   mordomo-financas-contas:
-    image: aslamsys/mordomo-financas-contas:latest
+    image: renaneunao/mordomo-financas-contas:latest
     container_name: mordomo-financas-contas
     restart: unless-stopped
     env_file: .env
@@ -14,7 +14,7 @@ services:
           memory: 256M
 
   mordomo-financas-pix:
-    image: aslamsys/mordomo-financas-pix:latest
+    image: renaneunao/mordomo-financas-pix:latest
     container_name: mordomo-financas-pix
     restart: unless-stopped
     env_file: .env

@@ -1,7 +1,7 @@
 services:
 
   mordomo-audio-capture-vad:
-    image: aslamsys/mordomo-audio-capture-vad:latest
+    image: renaneunao/mordomo-audio-capture-vad:latest
     container_name: mordomo-audio-capture-vad
     restart: unless-stopped
     env_file: .env
@@ -18,7 +18,7 @@ services:
           memory: 256M
 
   mordomo-wake-word-detector:
-    image: aslamsys/mordomo-wake-word-detector:latest
+    image: renaneunao/mordomo-wake-word-detector:latest
     container_name: mordomo-wake-word-detector
     restart: unless-stopped
     env_file: .env
@@ -31,7 +31,7 @@ services:
           memory: 256M
 
   mordomo-source-separation:
-    image: aslamsys/mordomo-source-separation:latest
+    image: renaneunao/mordomo-source-separation:latest
     container_name: mordomo-source-separation
     restart: unless-stopped
     env_file: .env
@@ -44,7 +44,7 @@ services:
           memory: 512M
 
   mordomo-speaker-verification:
-    image: aslamsys/mordomo-speaker-verification:latest
+    image: renaneunao/mordomo-speaker-verification:latest
     container_name: mordomo-speaker-verification
     restart: unless-stopped
     env_file: .env
@@ -59,7 +59,7 @@ services:
           memory: 256M
 
   mordomo-whisper-asr:
-    image: aslamsys/mordomo-whisper-asr:latest
+    image: renaneunao/mordomo-whisper-asr:latest
     container_name: mordomo-whisper-asr
     restart: unless-stopped
     env_file: .env
@@ -74,7 +74,7 @@ services:
           memory: 2G
 
   mordomo-speaker-id-diarization:
-    image: aslamsys/mordomo-speaker-id-diarization:latest
+    image: renaneunao/mordomo-speaker-id-diarization:latest
     container_name: mordomo-speaker-id-diarization
     restart: unless-stopped
     env_file: .env
@@ -89,7 +89,7 @@ services:
           memory: 512M
 
   mordomo-tts-engine:
-    image: aslamsys/mordomo-tts-engine:latest
+    image: renaneunao/mordomo-tts-engine:latest
     container_name: mordomo-tts-engine
     restart: unless-stopped
     env_file: .env
@@ -104,10 +104,12 @@ services:
           memory: 1G
 
   mordomo-audio-bridge:
-    image: aslamsys/mordomo-audio-bridge:latest
+    image: renaneunao/mordomo-audio-bridge:latest
     container_name: mordomo-audio-bridge
     restart: unless-stopped
     env_file: .env
+    ports:
+      - "3100:3100"
     devices:
       - /dev/snd:/dev/snd
     group_add:
@@ -121,7 +123,7 @@ services:
           memory: 128M
 
   mordomo-visual-feedback:
-    image: aslamsys/mordomo-visual-feedback:latest
+    image: renaneunao/mordomo-visual-feedback:latest
     container_name: mordomo-visual-feedback
     restart: unless-stopped
     env_file: .env

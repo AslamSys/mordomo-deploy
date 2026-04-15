@@ -1,7 +1,7 @@
 services:
 
   mordomo-iot-orchestrator:
-    image: aslamsys/mordomo-iot-orchestrator:latest
+    image: renaneunao/mordomo-iot-orchestrator:latest
     container_name: mordomo-iot-orchestrator
     restart: unless-stopped
     env_file: .env

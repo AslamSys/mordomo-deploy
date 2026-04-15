@@ -1,7 +1,7 @@
 services:
 
   mordomo-brain:
-    image: aslamsys/mordomo-brain:latest
+    image: renaneunao/mordomo-brain:latest
     container_name: mordomo-brain
     restart: unless-stopped
     env_file: .env
@@ -14,7 +14,7 @@ services:
           memory: 256M
 
   mordomo-orchestrator:
-    image: aslamsys/mordomo-orchestrator:latest
+    image: renaneunao/mordomo-orchestrator:latest
     container_name: mordomo-orchestrator
     restart: unless-stopped
     env_file: .env
@@ -27,7 +27,7 @@ services:
           memory: 256M
 
   mordomo-vault:
-    image: aslamsys/mordomo-vault:latest
+    image: renaneunao/mordomo-vault:latest
     container_name: mordomo-vault
     restart: unless-stopped
     env_file: .env
@@ -42,7 +42,7 @@ services:
           memory: 128M
 
   mordomo-people:
-    image: aslamsys/mordomo-people:latest
+    image: renaneunao/mordomo-people:latest
     container_name: mordomo-people
     restart: unless-stopped
     env_file: .env
@@ -55,7 +55,7 @@ services:
           memory: 128M
 
   mordomo-system-watchdog:
-    image: aslamsys/mordomo-system-watchdog:latest
+    image: renaneunao/mordomo-system-watchdog:latest
     container_name: mordomo-system-watchdog
     restart: unless-stopped
     env_file: .env
