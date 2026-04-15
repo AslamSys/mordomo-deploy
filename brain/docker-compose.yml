@@ -85,7 +85,8 @@ services:
       resources:
         limits:
           cpus: "0.5"
-          memory: 512Mvolumes:
+          memory: 512M
+volumes:
   vault-data:
   openclaw-workspace:
 
