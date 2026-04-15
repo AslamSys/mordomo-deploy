@@ -1,0 +1,182 @@
+# LiteLLM Proxy Configuration — AslamSys LLM Gateway
+# Docs: https://docs.litellm.ai/docs/proxy/configs
+#
+# PONTO ÚNICO DE DECISÃO: qual IA roda em qual ecossistema.
+# Para trocar o modelo de qualquer brain: edite 1 linha aqui e execute:
+#   docker kill -s HUP llm-gateway
+# Nenhum container consumidor precisa ser tocado.
+
+model_list:
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # MORDOMO (Orange Pi 5 Ultra)
+  # Conversação com humano — requer raciocínio profundo e contexto longo
+  # ══════════════════════════════════════════════════════════════════════════
+  - model_name: mordomo-brain
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Orquestração interna — muitas chamadas, latência importa mais que profundidade
+  - model_name: mordomo-orchestrator
+    litellm_params:
+      model: anthropic/claude-haiku-3-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Skills runner — execução de tarefas estruturadas, barato e rápido
+  - model_name: mordomo-skills-runner
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # OpenClaw agent — automação de browser/OS, não precisa de raciocínio profundo
+  - model_name: mordomo-openclaw-agent
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # SEGURANÇA (Jetson Orin Nano)
+  # Visão em tempo real — DEVE ser local, latência crítica, privacidade
+  # ══════════════════════════════════════════════════════════════════════════
+  - model_name: seguranca-brain
+    litellm_params:
+      model: ollama/qwen2.5-vl:3b
+      api_base: os.environ/JETSON_OLLAMA_URL   # http://jetson-llm:11434
+
+  # Event analyzer — classifica eventos de câmera, também local
+  - model_name: seguranca-event-analyzer
+    litellm_params:
+      model: ollama/qwen2.5-vl:3b
+      api_base: os.environ/JETSON_OLLAMA_URL
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # INVESTIMENTOS (RPi 5 16GB)
+  # Decisões financeiras — máxima qualidade, sem compromisso
+  # ══════════════════════════════════════════════════════════════════════════
+  - model_name: investimentos-brain
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Trading bot e análise técnica — precisa de velocidade + qualidade
+  - model_name: investimentos-trading-bot
+    litellm_params:
+      model: anthropic/claude-haiku-3-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Sentimento de notícias — volume alto, custo importa
+  - model_name: investimentos-news-sentiment
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # ML predictor — estruturado, sem criatividade, barato
+  - model_name: investimentos-ml-predictor
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # NAS (RPi 5 8GB)
+  # Organização de arquivos e mídia — tarefas leves, custo baixo
+  # ══════════════════════════════════════════════════════════════════════════
+  - model_name: nas-brain
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # Media indexer — geração de metadados e tags, volume alto
+  - model_name: nas-media-indexer
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # MORDOMO BRAIN — tiers de roteamento interno
+  # mordomo-brain (src/llm.py) escolhe o tier por complexidade/risco;
+  # o LiteLLM cuida dos fallbacks entre providers.
+  # ══════════════════════════════════════════════════════════════════════════
+
+  # Tier simples: perguntas curtas, IoT, lembretes — latência e custo mínimos
+  - model_name: mordomo-simple
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  # Tier complexo: multi-step, contexto longo, análises
+  - model_name: mordomo-complex
+    litellm_params:
+      model: anthropic/claude-haiku-3-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Tier alto risco: PIX, senhas, alarmes — máxima qualidade
+  - model_name: mordomo-stakes
+    litellm_params:
+      model: anthropic/claude-sonnet-4-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  # Embeddings para RAG (Qdrant)
+  - model_name: mordomo-embeddings
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+
+  # ══════════════════════════════════════════════════════════════════════════
+  # MODELOS BASE — usados como fallback pelos routers acima
+  # Não devem ser chamados diretamente pelos brains
+  # ══════════════════════════════════════════════════════════════════════════
+  - model_name: _fallback-premium
+    litellm_params:
+      model: anthropic/claude-haiku-3-5
+      api_key: os.environ/ANTHROPIC_API_KEY
+
+  - model_name: _fallback-cheap
+    litellm_params:
+      model: gemini/gemini-2.0-flash
+      api_key: os.environ/GEMINI_API_KEY
+
+  - model_name: _fallback-groq
+    litellm_params:
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+
+  - model_name: _fallback-embeddings
+    litellm_params:
+      model: gemini/text-embedding-004
+      api_key: os.environ/GEMINI_API_KEY
+
+
+# ── Fallbacks automáticos por virtual model ────────────────────────────────
+# Se o provider primário falhar, tenta o próximo na lista.
+# _fallback-groq é sempre o último recurso — funciona com apenas GROQ_API_KEY.
+router_settings:
+  routing_strategy: latency-based-routing
+  fallbacks:
+    - mordomo-simple:           [_fallback-groq]
+    - mordomo-complex:          [_fallback-cheap, _fallback-groq]
+    - mordomo-stakes:           [_fallback-premium, _fallback-cheap, _fallback-groq]
+    - mordomo-embeddings:       [_fallback-embeddings]
+    - mordomo-brain:            [_fallback-premium, _fallback-cheap, _fallback-groq]
+    - mordomo-orchestrator:     [_fallback-cheap, _fallback-groq]
+    - mordomo-skills-runner:    [_fallback-groq]
+    - mordomo-openclaw-agent:   [_fallback-groq]
+    - investimentos-brain:      [_fallback-premium, _fallback-cheap]
+    - investimentos-trading-bot:[_fallback-cheap, _fallback-groq]
+    - investimentos-news-sentiment: [_fallback-groq]
+    - nas-brain:                [_fallback-groq]
+    - nas-media-indexer:        [_fallback-groq]
+    # seguranca-* não tem fallback: deve falhar explicitamente (local ou nada)
+
+  num_retries: 2
+  request_timeout: 60
+
+
+# ── Configurações gerais ───────────────────────────────────────────────────
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  database_url: "postgresql://os.environ/POSTGRES_USER:os.environ/POSTGRES_PASSWORD@postgres:5432/os.environ/POSTGRES_DB"
+
+litellm_settings:
+  drop_params: true     # ignora params não suportados pelo provider atual
+  json_logs: true       # logs estruturados para coleta via Loki

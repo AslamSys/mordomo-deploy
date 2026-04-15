@@ -1,0 +1,96 @@
+services:
+
+  mordomo-brain:
+    image: aslamsys/mordomo-brain:latest
+    container_name: mordomo-brain
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  mordomo-orchestrator:
+    image: aslamsys/mordomo-orchestrator:latest
+    container_name: mordomo-orchestrator
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.4"
+          memory: 256M
+
+  mordomo-vault:
+    image: aslamsys/mordomo-vault:latest
+    container_name: mordomo-vault
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - vault-data:/data
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 128M
+
+  mordomo-people:
+    image: aslamsys/mordomo-people:latest
+    container_name: mordomo-people
+    restart: unless-stopped
+    env_file: .env
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 128M
+
+  mordomo-system-watchdog:
+    image: aslamsys/mordomo-system-watchdog:latest
+    container_name: mordomo-system-watchdog
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 64M
+
+  mordomo-openclaw-agent:
+    image: openclaw/openclaw:latest
+    container_name: mordomo-openclaw-agent
+    restart: unless-stopped
+    volumes:
+      - ./mordomo-openclaw-agent/openclaw.json:/home/node/.openclaw/openclaw.json:ro
+      - openclaw-workspace:/home/node/.openclaw/workspace
+    environment:
+      LITELLM_MASTER_KEY:      ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+      OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+volumes:
+  vault-data:
+  openclaw-workspace:
+
+networks:
+  mordomo-net:
+    external: true

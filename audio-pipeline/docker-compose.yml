@@ -1,0 +1,144 @@
+services:
+
+  mordomo-audio-capture-vad:
+    image: aslamsys/mordomo-audio-capture-vad:latest
+    container_name: mordomo-audio-capture-vad
+    restart: unless-stopped
+    env_file: ./mordomo-audio-capture-vad/.env
+    devices:
+      - /dev/snd:/dev/snd
+    group_add:
+      - audio
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  mordomo-wake-word-detector:
+    image: aslamsys/mordomo-wake-word-detector:latest
+    container_name: mordomo-wake-word-detector
+    restart: unless-stopped
+    env_file: ./mordomo-wake-word-detector/.env
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  mordomo-source-separation:
+    image: aslamsys/mordomo-source-separation:latest
+    container_name: mordomo-source-separation
+    restart: unless-stopped
+    env_file: ./mordomo-source-separation/.env
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+
+  mordomo-speaker-verification:
+    image: aslamsys/mordomo-speaker-verification:latest
+    container_name: mordomo-speaker-verification
+    restart: unless-stopped
+    env_file: ./mordomo-speaker-verification/.env
+    volumes:
+      - speaker-profiles:/app/profiles
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  mordomo-whisper-asr:
+    image: aslamsys/mordomo-whisper-asr:latest
+    container_name: mordomo-whisper-asr
+    restart: unless-stopped
+    env_file: ./mordomo-whisper-asr/.env
+    volumes:
+      - whisper-models:/app/models
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+
+  mordomo-speaker-id-diarization:
+    image: aslamsys/mordomo-speaker-id-diarization:latest
+    container_name: mordomo-speaker-id-diarization
+    restart: unless-stopped
+    env_file: ./mordomo-speaker-id-diarization/.env
+    volumes:
+      - speaker-profiles:/app/profiles
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+
+  mordomo-tts-engine:
+    image: aslamsys/mordomo-tts-engine:latest
+    container_name: mordomo-tts-engine
+    restart: unless-stopped
+    env_file: ./mordomo-tts-engine/.env
+    volumes:
+      - tts-models:/app/models
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+
+  mordomo-audio-bridge:
+    image: aslamsys/mordomo-audio-bridge:latest
+    container_name: mordomo-audio-bridge
+    restart: unless-stopped
+    env_file: ./mordomo-audio-bridge/.env
+    devices:
+      - /dev/snd:/dev/snd
+    group_add:
+      - audio
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 128M
+
+  mordomo-visual-feedback:
+    image: aslamsys/mordomo-visual-feedback:latest
+    container_name: mordomo-visual-feedback
+    restart: unless-stopped
+    env_file: ./mordomo-visual-feedback/.env
+    privileged: true        # acesso a GPIO/LED
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.1"
+          memory: 64M
+
+volumes:
+  speaker-profiles:
+  whisper-models:
+  tts-models:
+
+networks:
+  mordomo-net:
+    external: true

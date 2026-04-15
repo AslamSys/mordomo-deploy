@@ -1,0 +1,72 @@
+// OpenClaw configuration for Mordomo
+// All LLM calls route through the LiteLLM gateway (http://llm-gateway:4000)
+// Docs: https://docs.openclaw.ai/gateway/configuration
+{
+  gateway: {
+    port: 18789,
+    // Docker bridge networking requires "lan" so traffic from the host reaches
+    // the container via the published port (-p 18789:18789).
+    bind: "lan",
+    auth: {
+      mode: "token",
+      token: "${OPENCLAW_GATEWAY_TOKEN}",
+    },
+  },
+
+  agents: {
+    defaults: {
+      // Use the LiteLLM virtual model "mordomo-openclaw-agent" via the
+      // custom "mordomo" provider defined in models.providers below.
+      model: "mordomo/mordomo-openclaw-agent",
+      // Workspace persisted inside the container volume
+      workspace: "~/.openclaw/workspace",
+    },
+  },
+
+  // ── Custom provider: LiteLLM gateway ──────────────────────────────────
+  // Registers the LiteLLM proxy as an OpenAI-compatible provider.
+  // Model format: "mordomo/<virtual-model-name>" (e.g. mordomo/mordomo-simple)
+  models: {
+    mode: "merge",
+    providers: {
+      mordomo: {
+        // Internal Docker service name — reachable from within mordomo-net
+        baseUrl: "http://llm-gateway:4000/v1",
+        apiKey: "${LITELLM_MASTER_KEY}",
+        // LiteLLM exposes an OpenAI Chat Completions API
+        api: "openai-completions",
+        // Catalog of virtual models exposed by the LiteLLM gateway.
+        // Add entries here when you need OpenClaw to use a different tier.
+        models: [
+          {
+            id: "mordomo-openclaw-agent",
+            name: "Mordomo OpenClaw Agent (Gemini Flash via LiteLLM)",
+            reasoning: false,
+            input: ["text", "image"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 200000,
+            maxTokens: 8192,
+          },
+          {
+            id: "mordomo-simple",
+            name: "Mordomo Simple Tier",
+            reasoning: false,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 200000,
+            maxTokens: 8192,
+          },
+          {
+            id: "mordomo-complex",
+            name: "Mordomo Complex Tier",
+            reasoning: false,
+            input: ["text"],
+            cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+            contextWindow: 200000,
+            maxTokens: 8192,
+          },
+        ],
+      },
+    },
+  },
+}

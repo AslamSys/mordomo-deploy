@@ -1,0 +1,50 @@
+services:
+
+  mordomo-iot-orchestrator:
+    image: aslamsys/mordomo-iot-orchestrator:latest
+    container_name: mordomo-iot-orchestrator
+    restart: unless-stopped
+    environment:
+      NATS_URL:      nats://nats:4222
+      MQTT_BROKER:   mqtt://mqtt-broker:1883
+      MQTT_USER:     ${MQTT_USER:-orchestrator}
+      MQTT_PASSWORD: ${MQTT_PASSWORD:?MQTT_PASSWORD is required}
+      REDIS_URL:     redis://redis:6379/2
+    networks:
+      - mordomo-net
+      - iot-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.4"
+          memory: 256M
+
+  mqtt-broker:
+    image: eclipse-mosquitto:2.0
+    container_name: mordomo-iot-mqtt-broker
+    restart: unless-stopped
+    ports:
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - ./mqtt-broker/config/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mqtt-data:/mosquitto/data
+      - mqtt-log:/mosquitto/log
+    networks:
+      - iot-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.3"
+          memory: 192M
+
+volumes:
+  mqtt-data:
+  mqtt-log:
+
+networks:
+  mordomo-net:
+    external: true
+  iot-net:
+    name: iot-net
+    driver: bridge
