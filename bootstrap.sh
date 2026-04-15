@@ -33,13 +33,24 @@ else
   git pull
 fi
 
-# ── Load .env ─────────────────────────────────────────────────
-if [ ! -f .env ]; then
-  echo "ERROR: .env not found."
-  echo "  cp .env.example .env && nano .env"
+# ── Verificar .env por grupo ──────────────────────────────────
+# Cada grupo tem seu próprio .env ao lado do docker-compose.yml
+GROUPS_WITH_ENV=(infra iot audio-pipeline financas brain)
+missing_env=0
+for g in "${GROUPS_WITH_ENV[@]}"; do
+  if [ ! -f "$g/.env" ]; then
+    echo "  AVISO: $g/.env não encontrado (cp $g/.env.example $g/.env)"
+    missing_env=1
+  fi
+done
+if [ "$missing_env" = "1" ]; then
+  echo ""
+  echo "ERROR: Falaltam arquivos .env. Crie-os antes de continuar."
   exit 1
 fi
-set -a; source .env; set +a
+
+# Carrega infra/.env para variáveis usadas no wait_healthy
+set -a; source infra/.env; set +a
 
 # ── Docker networks ───────────────────────────────────────────
 for net in mordomo-net iot-net; do

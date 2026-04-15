@@ -18,9 +18,9 @@ set -euo pipefail
 DEPLOY_DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DEPLOY_DIR"
 
-# ── Load .env ─────────────────────────────────────────────────
-if [ -f .env ]; then
-  set -a; source .env; set +a
+# ── Load infra/.env para variáveis compartilhadas ────────────
+if [ -f infra/.env ]; then
+  set -a; source infra/.env; set +a
 fi
 
 # ── Grupos disponíveis ────────────────────────────────────────
@@ -44,15 +44,19 @@ echo "    ok"
 update_group() {
   local name="$1"
   local file="${GROUPS[$name]}"
+  local envfile="$name/.env"
 
   echo ""
   echo "==> [$name] verificando imagens..."
 
-  # Pull das imagens — docker compose pull exibe o que foi atualizado
-  docker compose -f "$file" pull
+  # Garante que o .env existe
+  if [ ! -f "$envfile" ]; then
+    echo "  AVISO: $envfile não encontrado — usando .env.example como referência"
+    echo "  Crie com: cp $name/.env.example $envfile"
+    return 1
+  fi
 
-  # Recria apenas containers com imagem nova (--no-recreate não se aplica;
-  # compose só recria se a imagem ou config mudou)
+  docker compose -f "$file" pull
   docker compose -f "$file" up -d --remove-orphans
 
   echo "    [$name] pronto"

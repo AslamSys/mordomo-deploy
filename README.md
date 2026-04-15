@@ -38,22 +38,25 @@ cd mordomo-deploy
 
 ### 2. Configurar variáveis de ambiente
 
+Cada grupo tem seu próprio `.env.example` ao lado do `docker-compose.yml`. Crie um `.env` para cada um:
+
 ```bash
-cp .env.example .env
-nano .env
+cp infra/.env.example          infra/.env
+cp iot/.env.example            iot/.env
+cp audio-pipeline/.env.example audio-pipeline/.env
+cp financas/.env.example       financas/.env
+cp brain/.env.example          brain/.env
 ```
 
-Preencha todos os valores marcados com `changeme`. Os campos obrigatórios são:
+Edite cada arquivo e preencha os valores obrigatórios:
 
-| Variável | Descrição |
+| Grupo | Variáveis obrigatórias |
 |---|---|
-| `POSTGRES_PASSWORD` | Senha do banco de dados |
-| `LITELLM_MASTER_KEY` | Chave mestra do gateway LLM |
-| `SECRET_KEY` | Chave de sessão do brain/orchestrator |
-| `VAULT_SECRET_KEY` | Chave de criptografia do vault |
-| `MQTT_PASSWORD` | Senha do broker MQTT |
-
-Pelo menos uma chave de provider LLM é necessária (`GEMINI_API_KEY`, `GROQ_API_KEY`, `ANTHROPIC_API_KEY` ou `OPENAI_API_KEY`).
+| `infra` | `POSTGRES_PASSWORD`, `LITELLM_MASTER_KEY` |
+| `iot` | `MQTT_PASSWORD` |
+| `audio-pipeline` | — (defaults funcionam para desenvolvimento) |
+| `financas` | `DATABASE_URL` (com senha real) |
+| `brain` | `VAULT_MASTER_KEY`, `PEOPLE_MASTER_KEY`, `LITELLM_MASTER_KEY` |
 
 ### 3. Executar o bootstrap
 
