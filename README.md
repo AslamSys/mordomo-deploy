@@ -19,6 +19,17 @@ Cada serviço tem seu próprio subdiretório com `README.md`, `.env.example` e a
 
 ---
 
+## Acesso Remoto
+
+### Casa do Renan (Orange Pi)
+Para acessar o hardware principal na rede local, utilize o alias configurado no SSH:
+
+```bash
+ssh mordomo
+```
+
+---
+
 ## Pré-requisitos
 
 - Docker Engine 24+
@@ -141,3 +152,33 @@ As redes são criadas automaticamente pelo `bootstrap.sh`.
 ## Repositório de código-fonte
 
 [AslamSys/mordomo-code](https://github.com/AslamSys) — contém o código-fonte de cada serviço e os workflows de CI que geram as imagens Docker publicadas no Docker Hub.
+
+---
+
+## Checklist de Validação
+
+### 1. Infraestrutura
+- [ ] **Postgres**: Conexão e persistência (healthcheck OK)
+- [ ] **Redis**: Conexão e pub/sub (healthcheck OK)
+- [ ] **NATS**: Disponibilidade do servidor e cluster (healthcheck OK)
+- [ ] **LiteLLM**: Gateway de APIs respondendo (/health)
+- [ ] **Qdrant**: Banco vetorial online
+
+### 2. IoT
+- [ ] **MQTT Broker**: Conexão com auth
+- [ ] **IoT Orchestrator**: Recebendo/Enviando mensagens NATS<->MQTT
+
+### 3. Audio Pipeline
+- [ ] **Audio Capture/VAD**: Detectando áudio (logs)
+- [ ] **Wake Word**: Reconhecendo "Aslam/Mordomo"
+- [ ] **Whisper ASR**: Transcrição funcional
+- [ ] **TTS Engine**: Geração de áudio (Piper/OpenAI)
+- [ ] **Speaker ID**: Identificação de orador operando
+- [ ] **Audio Bridge**: Switch de fluxos NATS funcionando
+
+### 4. Brain & Orchestrator
+- [ ] **Vault**: Acesso a segredos/chaves
+- [ ] **People**: Cadastro e busca de perfis
+- [ ] **Brain**: Processamento de intenções e ferramentas
+- [ ] **Orchestrator**: Roteamento de eventos global
+- [ ] **Watchdog**: Monitoramento de saúde dos serviços

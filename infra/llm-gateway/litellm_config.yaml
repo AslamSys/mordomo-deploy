@@ -178,7 +178,7 @@ router_settings:
 # ── Configurações gerais ───────────────────────────────────────────────────
 general_settings:
   master_key: os.environ/LITELLM_MASTER_KEY
-  database_url: "postgresql://os.environ/POSTGRES_USER:os.environ/POSTGRES_PASSWORD@postgres:5432/os.environ/POSTGRES_DB"
+  # database_url: "postgresql://os.environ/POSTGRES_USER:os.environ/POSTGRES_PASSWORD@postgres:5432/os.environ/POSTGRES_DB"
 
 litellm_settings:
   drop_params: true     # ignora params não suportados pelo provider atual
