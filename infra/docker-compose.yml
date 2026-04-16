@@ -90,7 +90,7 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: justsong/one-api:latest
+    image: calciumion/new-api:latest
     container_name: llm-gateway
     restart: unless-stopped
     ports:
