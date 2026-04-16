@@ -90,23 +90,18 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: ghcr.io/berriai/litellm:main-stable
+    image: justsong/one-api:latest
     container_name: llm-gateway
     restart: unless-stopped
-    command: ["--config", "/app/config.yaml", "--port", "4000", "--host", "0.0.0.0"]
     ports:
-      - "4000:4000"
+      - "4000:3000"
     volumes:
-      - ./llm-gateway/litellm_config.yaml:/app/config.yaml:ro
+      - ./one-api:/data
     environment:
-      ANTHROPIC_API_KEY:  ${ANTHROPIC_API_KEY:-}
-      OPENAI_API_KEY:     ${OPENAI_API_KEY:-}
-      GEMINI_API_KEY:     ${GEMINI_API_KEY:-}
-      GROQ_API_KEY:       ${GROQ_API_KEY:-}
-      LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
-      LITELLM_CONFIG_PATH: "/app/config.yaml"
-      PORT: "4000"
-      PRISMA_CLI_BINARY_TARGETS: "linux-arm64-openssl-3.0.x"
+      - TZ=America/Sao_Paulo
+      - SQL_DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
+      - NODE_TYPE=master
+      - SESSION_SECRET=${LITELLM_MASTER_KEY} # Reusing key as secret
     networks:
       - mordomo-net
     depends_on:
