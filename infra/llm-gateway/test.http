@@ -1,0 +1,53 @@
+### Variáveis
+@groq_key = {{GROQ_API_KEY}}
+@gateway_url = http://localhost:4000
+@gateway_key = c40b1eef5ea71c52361899e28b865cfb5bb13caf4f06a68a08995cb962a2f861
+
+# =============================================================
+# GROQ DIRETO (sem gateway) — para validar chave e modelo
+# =============================================================
+
+### Groq — llama-3.3-70b-versatile
+POST https://api.groq.com/openai/v1/chat/completions
+Authorization: Bearer {{groq_key}}
+Content-Type: application/json
+
+{
+  "model": "llama-3.3-70b-versatile",
+  "messages": [{ "role": "user", "content": "olá! quem é você?" }]
+}
+
+# =============================================================
+# LLM GATEWAY (LiteLLM rodando local) — para testar virtual models
+# Requer: docker compose up -d postgres llm-gateway
+# =============================================================
+
+### Gateway — mordomo-simple (gemini-flash → fallback groq)
+POST {{gateway_url}}/v1/chat/completions
+Authorization: Bearer {{gateway_key}}
+Content-Type: application/json
+
+{
+  "model": "mordomo-simple",
+  "messages": [{ "role": "user", "content": "olá!" }]
+}
+
+### Gateway — mordomo-stakes (claude-sonnet → fallback groq)
+POST {{gateway_url}}/v1/chat/completions
+Authorization: Bearer {{gateway_key}}
+Content-Type: application/json
+
+{
+  "model": "mordomo-stakes",
+  "messages": [{ "role": "user", "content": "autorizar transferência PIX de R$ 500" }]
+}
+
+### Gateway — mordomo-embeddings
+POST {{gateway_url}}/v1/embeddings
+Authorization: Bearer {{gateway_key}}
+Content-Type: application/json
+
+{
+  "model": "mordomo-embeddings",
+  "input": "texto para gerar embedding"
+}

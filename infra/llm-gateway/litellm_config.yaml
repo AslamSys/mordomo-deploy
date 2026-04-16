@@ -14,25 +14,25 @@ model_list:
   # ══════════════════════════════════════════════════════════════════════════
   - model_name: mordomo-brain
     litellm_params:
-      model: anthropic/claude-sonnet-4-5
+      model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # Orquestração interna — muitas chamadas, latência importa mais que profundidade
   - model_name: mordomo-orchestrator
     litellm_params:
-      model: anthropic/claude-haiku-3-5
+      model: anthropic/claude-haiku-4-5
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # Skills runner — execução de tarefas estruturadas, barato e rápido
   - model_name: mordomo-skills-runner
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   # OpenClaw agent — automação de browser/OS, não precisa de raciocínio profundo
   - model_name: mordomo-openclaw-agent
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   # ══════════════════════════════════════════════════════════════════════════
@@ -56,19 +56,19 @@ model_list:
   # ══════════════════════════════════════════════════════════════════════════
   - model_name: investimentos-brain
     litellm_params:
-      model: anthropic/claude-sonnet-4-5
+      model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # Trading bot e análise técnica — precisa de velocidade + qualidade
   - model_name: investimentos-trading-bot
     litellm_params:
-      model: anthropic/claude-haiku-3-5
+      model: anthropic/claude-haiku-4-5
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # Sentimento de notícias — volume alto, custo importa
   - model_name: investimentos-news-sentiment
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   # ML predictor — estruturado, sem criatividade, barato
@@ -83,13 +83,13 @@ model_list:
   # ══════════════════════════════════════════════════════════════════════════
   - model_name: nas-brain
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   # Media indexer — geração de metadados e tags, volume alto
   - model_name: nas-media-indexer
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   # ══════════════════════════════════════════════════════════════════════════
@@ -99,22 +99,25 @@ model_list:
   # ══════════════════════════════════════════════════════════════════════════
 
   # Tier simples: perguntas curtas, IoT, lembretes — latência e custo mínimos
+  # $1.13/M | 160 t/s | fallback: groq gratuito
   - model_name: mordomo-simple
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   # Tier complexo: multi-step, contexto longo, análises
+  # $2.00/M | fallback: gemini-3-flash-preview → groq
   - model_name: mordomo-complex
     litellm_params:
-      model: anthropic/claude-haiku-3-5
+      model: anthropic/claude-haiku-4-5
       api_key: os.environ/ANTHROPIC_API_KEY
 
   # Tier alto risco: PIX, senhas, alarmes — máxima qualidade
+  # $4.50/M, score 57 | fallback: claude-sonnet-4-6 → gemini-3-flash-preview → groq
   - model_name: mordomo-stakes
     litellm_params:
-      model: anthropic/claude-sonnet-4-5
-      api_key: os.environ/ANTHROPIC_API_KEY
+      model: gemini/gemini-3-pro-preview
+      api_key: os.environ/GEMINI_API_KEY
 
   # Embeddings para RAG (Qdrant)
   - model_name: mordomo-embeddings
@@ -128,12 +131,12 @@ model_list:
   # ══════════════════════════════════════════════════════════════════════════
   - model_name: _fallback-premium
     litellm_params:
-      model: anthropic/claude-haiku-3-5
+      model: anthropic/claude-sonnet-4-6
       api_key: os.environ/ANTHROPIC_API_KEY
 
   - model_name: _fallback-cheap
     litellm_params:
-      model: gemini/gemini-2.0-flash
+      model: gemini/gemini-3-flash-preview
       api_key: os.environ/GEMINI_API_KEY
 
   - model_name: _fallback-groq

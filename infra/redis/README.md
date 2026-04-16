@@ -28,33 +28,104 @@ Cache em memória de alta performance para acelerar consultas, armazenar sessõe
 
 ---
 
-## �️ Alocação de DBs
+## 🗃️ Alocação de DBs
 
 Redis suporta 16 databases (db0–db15). Registre aqui toda nova alocação antes de usar.
 
-| DB  | Serviço                    | Conteúdo                                              |
-|-----|----------------------------|-------------------------------------------------------|
-| db0 | `mordomo-people`           | Cache de perfis, sessões de identificação             |
-| db1 | `mordomo-brain` / geral    | Sessões de conversa ativas, contexto LLM              |
-| db2 | `mordomo-iot-state-cache`  | Estado atual dos dispositivos IoT                     |
-| db3 | `mordomo-visual-feedback`  | Regras visuais registradas por serviço (persistente)  |
-| db4 | *(reservado)*              | —                                                     |
-| … | *(livre)*                  | —                                                     |
+| DB  | Serviço(s)                               | Conteúdo                                                             |
+|-----|------------------------------------------|----------------------------------------------------------------------|
+| db0 | `mordomo-people`                         | Cache de perfis (resolve por nome/id), cache de permissões           |
+| db1 | `mordomo-brain` + `mordomo-orchestrator` | Contexto de conversa, registry de tools, registry de rotas, sessões |
+| db2 | `mordomo-iot-orchestrator`               | Estado atual dos dispositivos IoT (device_id → estado)               |
+| db3 | `mordomo-visual-feedback`                | Regras visuais registradas por serviço (persistente, TTL longo)      |
+| db4 | *(reservado)*                            | —                                                                    |
 
 > **Regra:** nunca use um DB sem registrar aqui primeiro. Assim evitamos colisão de keys entre serviços.
 
-### Estrutura de keys — db3 (visual-feedback)
+---
+
+### Estrutura de keys — db0 (`mordomo-people`)
 
 ```
-vfb:rules:{service_name}   →  Hash com as regras visuais do serviço (JSON)
+people:resolve:{name_lower}    →  String JSON  (perfil completo, TTL RESOLVE_CACHE_TTL)
+people:perms:{person_id}       →  String JSON  (permissões, TTL PERMISSIONS_CACHE_TTL)
 ```
 
-Exemplo:
+```bash
+redis-cli -n 0 GET "people:resolve:joao"
+redis-cli -n 0 GET "people:perms:<uuid>"
+```
+
+---
+
+### Estrutura de keys — db1 (`mordomo-brain` / `mordomo-orchestrator`)
+
+#### Contexto de conversa por speaker
+```
+brain:ctx:{speaker_id}         →  List  (últimas N mensagens como JSON, TTL 30min)
+```
+
+#### Sessão de speaker ativo (orchestrator)
+```
+session:{speaker_id}           →  Hash  (state, confidence, last_seen — TTL SESSION_TTL)
+```
+
+#### Registry dinâmico de tools (capabilities do brain)
+```
+mordomo:tools                  →  Hash  (campo = nome da tool, valor = JSON OpenAI function definition)
+```
+
+Escrito por: `mordomo-brain` no startup (seed via `HSETNX`) e por qualquer serviço que queira registrar novas capabilities.
+Lido por: `mordomo-brain` a cada `TOOLS_CACHE_TTL` segundos (padrão 120s).
+Regra: usar `HSETNX` para não sobrescrever definições de outros serviços.
+
+```bash
+redis-cli -n 1 HKEYS mordomo:tools
+redis-cli -n 1 HGET mordomo:tools pix_send
+redis-cli -n 1 HSET mordomo:tools minha_tool '{"type":"function","function":{...}}'
+redis-cli -n 1 HDEL mordomo:tools minha_tool
+```
+
+#### Registry dinâmico de rotas (action dispatch)
+```
+mordomo:routes                 →  Hash  (campo = action_type, valor = NATS subject destino)
+```
+
+Escrito por: `mordomo-orchestrator` no startup (seed via `HSETNX`) e por qualquer serviço que queira registrar suas próprias rotas.
+Lido por: `mordomo-orchestrator` a cada `ROUTES_CACHE_TTL` segundos (padrão 120s).
+
+```bash
+redis-cli -n 1 HKEYS mordomo:routes
+redis-cli -n 1 HGET mordomo:routes pix_send
+redis-cli -n 1 HSET mordomo:routes minha_action "meu.servico.command"
+redis-cli -n 1 HDEL mordomo:routes minha_action
+```
+
+---
+
+### Estrutura de keys — db2 (`mordomo-iot-orchestrator`)
+
+```
+iot:state:{device_id}          →  String JSON  (estado atual do dispositivo)
+```
+
+```bash
+redis-cli -n 2 GET "iot:state:luz_sala"
+redis-cli -n 2 KEYS "iot:state:*"
+```
+
+---
+
+### Estrutura de keys — db3 (`mordomo-visual-feedback`)
+
+```
+vfb:rules:{service_name}       →  Hash  (regras visuais do serviço como JSON)
+```
+
 ```bash
 redis-cli -n 3 HGETALL "vfb:rules:wake-word-detector"
 ```
 
----
 
 ## �🔧 Tecnologias
 
