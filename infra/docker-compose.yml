@@ -90,9 +90,10 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: ghcr.io/berriai/litellm:main-latest
+    image: ghcr.io/berriai/litellm:main-stable
     container_name: llm-gateway
     restart: unless-stopped
+    command: ["--config", "/app/config.yaml", "--port", "4000", "--host", "0.0.0.0"]
     ports:
       - "4000:4000"
     volumes:
