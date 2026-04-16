@@ -1,2 +1,6 @@
 # Ignore generated MQTT broker password file
 iot/mqtt-broker/config/passwd
+
+# Ignore local environment files created on deploy
+*.env
+!*.env.example
