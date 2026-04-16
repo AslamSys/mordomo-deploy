@@ -93,7 +93,7 @@ services:
     image: ghcr.io/berriai/litellm:latest
     container_name: llm-gateway
     restart: unless-stopped
-    command: ["--config", "/app/config.yaml", "--port", "4000"]
+    command: ["litellm", "--config", "/app/config.yaml", "--port", "4000"]
     ports:
       - "4000:4000"
     volumes:
