@@ -90,7 +90,7 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: berriai/litellm:main-v1.60.2-debian
+    image: ghcr.io/berriai/litellm:main-v1.60.2
     container_name: llm-gateway
     restart: always
     ports:
