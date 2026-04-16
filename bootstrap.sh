@@ -123,6 +123,17 @@ wait_healthy() {
   echo "    $container is ready"
 }
 
+seed_gateway() {
+  local sql_file="infra/llm-gateway/seed-gateway.sql"
+  if [ -f "$sql_file" ]; then
+    echo "    seeding llm-gateway configuration..."
+    # Injeta as chaves reais no fluxo SQL antes de enviar ao postgres
+    sed -e "s/TEMP_GROQ_KEY/${GROQ_API_KEY:-}/g" \
+        -e "s/TEMP_GEMINI_KEY/${GEMINI_API_KEY:-}/g" \
+        "$sql_file" | docker exec -i postgres psql -U ${POSTGRES_USER:-aslam} -d ${POSTGRES_DB:-aslam} >/dev/null
+  fi
+}
+
 # ── Deploy ────────────────────────────────────────────────────
 GROUP="${GROUP:-all}"
 
@@ -131,6 +142,9 @@ if [[ "$GROUP" == "all" || "$GROUP" == "infra" ]]; then
   wait_healthy "postgres" "pg_isready -U ${POSTGRES_USER:-aslam}"
   wait_healthy "redis"    "redis-cli ping"
   wait_healthy "nats"     "nats-server --help"
+  
+  # Inicializa as configurações do Gateway no banco de dados
+  seed_gateway
 fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "iot" ]]; then
