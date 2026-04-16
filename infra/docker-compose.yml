@@ -90,23 +90,18 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: calciumion/new-api:latest
+    image: berriai/litellm:main-v1.60.2-debian
     container_name: llm-gateway
-    restart: unless-stopped
+    restart: always
     ports:
-      - "4000:3000"
+      - "4000:4000"
     volumes:
-      - ./one-api:/data
+      - ./llm-gateway/litellm_config.yaml:/app/config.yaml
     environment:
-      - TZ=America/Sao_Paulo
-      - SQL_DSN=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable
-      - NODE_TYPE=master
-      - SESSION_SECRET=${LITELLM_MASTER_KEY} # Reusing key as secret
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-mordomo-master-key}
+    command: ["--config", "/app/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
     networks:
       - mordomo-net
-    depends_on:
-      postgres:
-        condition: service_healthy
 
 volumes:
   postgres-data:
@@ -117,4 +112,6 @@ volumes:
 
 networks:
   mordomo-net:
+    external: true
+  iot-net:
     external: true
