@@ -93,7 +93,7 @@ services:
     image: ghcr.io/berriai/litellm:latest
     container_name: llm-gateway
     restart: unless-stopped
-    command: ["litellm", "--config", "/app/config.yaml", "--port", "4000"]
+    command: litellm --config /app/config.yaml --port 4000
     ports:
       - "4000:4000"
     volumes:
@@ -106,6 +106,8 @@ services:
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
       DATABASE_URL:       "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
       LITELLM_DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
+      PRISMA_CLI_BINARY_TARGETS: "linux-arm64-openssl-3.0.x"
+      LITELLM_LOG: "INFO"
     networks:
       - mordomo-net
     depends_on:
