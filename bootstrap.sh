@@ -70,6 +70,39 @@ else
   echo "  Para autenticar, defina DOCKERHUB_USERNAME e DOCKERHUB_TOKEN"
 fi
 
+ensure_iot_mqtt_password_file() {
+  local config_dir="$DEPLOY_DIR/iot/mqtt-broker/config"
+  local passwd_file="$config_dir/passwd"
+  local env_file="$DEPLOY_DIR/iot/.env"
+
+  if [ ! -f "$passwd_file" ]; then
+    echo "  INFO: mqtt password file missing, creating $passwd_file"
+
+    if [ ! -f "$env_file" ]; then
+      echo "  ERROR: $env_file not found. Create it from iot/.env.example and set MQTT_USER/MQTT_PASSWORD."
+      exit 1
+    fi
+
+    set -a; source "$env_file"; set +a
+
+    if [ -z "${MQTT_USER:-}" ] || [ -z "${MQTT_PASSWORD:-}" ]; then
+      echo "  ERROR: MQTT_USER and MQTT_PASSWORD must be set in iot/.env"
+      exit 1
+    fi
+
+    if command -v mosquitto_passwd >/dev/null 2>&1; then
+      mosquitto_passwd -b -c "$passwd_file" "$MQTT_USER" "$MQTT_PASSWORD"
+    elif command -v openssl >/dev/null 2>&1; then
+      printf '%s:%s\n' "$MQTT_USER" "$(openssl passwd -6 "$MQTT_PASSWORD")" > "$passwd_file"
+    else
+      echo "  ERROR: cannot generate MQTT password file; install mosquitto_passwd or openssl"
+      exit 1
+    fi
+
+    chmod 600 "$passwd_file"
+  fi
+}
+
 # ── Helper ────────────────────────────────────────────────────
 deploy_group() {
   local name="$1"
@@ -101,6 +134,7 @@ if [[ "$GROUP" == "all" || "$GROUP" == "infra" ]]; then
 fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "iot" ]]; then
+  ensure_iot_mqtt_password_file
   deploy_group "iot" "iot/docker-compose.yml"
 fi
 

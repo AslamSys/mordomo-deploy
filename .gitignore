@@ -1,0 +1,2 @@
+# Ignore generated MQTT broker password file
+iot/mqtt-broker/config/passwd
