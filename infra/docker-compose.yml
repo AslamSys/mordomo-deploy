@@ -90,16 +90,17 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: ghcr.io/berriai/litellm:main-v1.60.2
+    image: calciumion/new-api:latest
     container_name: llm-gateway
     restart: always
     ports:
-      - "4000:4000"
-    volumes:
-      - ./llm-gateway/litellm_config.yaml:/app/config.yaml
+      - "4000:3000"
     environment:
-      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-sk-mordomo-master-key}
-    command: ["--config", "/app/config.yaml", "--host", "0.0.0.0", "--port", "4000"]
+      - SQL_DSN=postgres://${POSTGRES_USER:-aslam}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-aslam}
+      - SESSION_SECRET=${LITELLM_MASTER_KEY:-mordomo-secret}
+      - TZ=America/Sao_Paulo
+    depends_on:
+      - postgres
     networks:
       - mordomo-net
 
