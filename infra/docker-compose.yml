@@ -103,8 +103,6 @@ services:
       GEMINI_API_KEY:     ${GEMINI_API_KEY:-}
       GROQ_API_KEY:       ${GROQ_API_KEY:-}
       LITELLM_MASTER_KEY: ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
-      DATABASE_URL:       "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
-      LITELLM_DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}"
       LITELLM_CONFIG_PATH: "/app/config.yaml"
       PORT: "4000"
       PRISMA_CLI_BINARY_TARGETS: "linux-arm64-openssl-3.0.x"
