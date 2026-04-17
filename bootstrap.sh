@@ -18,6 +18,12 @@
 set -euo pipefail
 
 DEPLOY_DIR="${DEPLOY_DIR:-$(cd "$(dirname "$0")" && pwd)}"
+
+# ── Environment ───────────────────────────────────────────────
+if [ -f "brain/.env" ]; then
+  # Carrega as variáveis para o shell (ignora comentários e vazias)
+  export $(grep -v '^#' brain/.env | xargs)
+fi
 DEPLOY_REPO="https://github.com/AslamSys/mordomo-deploy.git"
 
 # ── Clone / update repo ───────────────────────────────────────
