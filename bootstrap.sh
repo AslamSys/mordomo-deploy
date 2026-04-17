@@ -131,6 +131,10 @@ if [[ "$GROUP" == "all" || "$GROUP" == "infra" ]]; then
   wait_healthy "postgres" "pg_isready -U ${POSTGRES_USER:-aslam}"
   wait_healthy "redis"    "redis-cli ping"
   wait_healthy "nats"     "nats-server --help"
+  
+  # Inicializa o New-API (Go Gateway) automaticamente
+  echo "    seeding new-api configuration..."
+  sed "s/TEMP_GROQ_KEY/${GROQ_API_KEY}/g" infra/llm-gateway/setup-gateway.sql | docker exec -i postgres psql -U ${POSTGRES_USER:-aslam} -d ${POSTGRES_DB:-aslam} >/dev/null
 fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "iot" ]]; then
