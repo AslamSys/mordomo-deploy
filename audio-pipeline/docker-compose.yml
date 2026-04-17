@@ -41,7 +41,7 @@ services:
       resources:
         limits:
           cpus: "1.0"
-          memory: 512M
+          memory: 1536M
 
 #  mordomo-speaker-verification — descomente na primeira execução para o setup do admin.
 #  Após o admin estar cadastrado, remova SETUP_MODE do .env e reinicie.
