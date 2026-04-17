@@ -1,27 +1,23 @@
 -- ══════════════════════════════════════════════════════════════════════════
--- NEW-API MASTER BOOTSTRAP (AUTOMATED)
+-- NEW-API MASTER BOOTSTRAP (ZERO-TOUCH DEPLOY)
 -- ══════════════════════════════════════════════════════════════════════════
 
--- 0. Correção de Tipos e Limpeza
-ALTER TABLE users ALTER COLUMN username TYPE text;
-ALTER TABLE tokens ALTER COLUMN key TYPE text;
-ALTER TABLE channels ALTER COLUMN name TYPE text;
+-- 1. Cria o Usuário Administrador (se não existir)
+-- Senha padrão: 123456 (Hash oficial do New-API)
+INSERT INTO users (id, username, password, role, status, quota, "group")
+VALUES (1, 'root', '$2a$10$omgPVnzELawensprk5.hhOQAjOJ2vDxBeek8PBXkcLu1mQ0PdXCr.', 100, 1, 1000000000, 'default')
+ON CONFLICT (id) DO UPDATE SET role = 100, quota = 1000000000;
 
--- 1. Setup do Usuário Root (Admin)
-DELETE FROM users WHERE id = 1;
-INSERT INTO users (id, username, password, role, status, quota)
-VALUES (1, 'root', '$2a$10$K9x9rK./l.L3d.L3d.L3d.L3d.L3d.L3d.L3d.L3d.L3d.L3d.', 100, 1, 1000000000);
+-- 2. Ativa o Modo de Autoconsumo (Pula erros de preço)
+INSERT INTO options (key, value) VALUES ('CommonSelfUseMode', 'true') 
+ON CONFLICT (key) DO UPDATE SET value = 'true';
 
--- 2. Setup de Opções Globais
-DELETE FROM options WHERE key = 'SetupCompleted';
-INSERT INTO options (key, value) VALUES ('SetupCompleted', 'true');
-
--- 3. Setup dos Canais (Groq)
+-- 3. Configura o Canal da Groq automaticamente
 DELETE FROM channels WHERE name = 'Groq-Auto';
 INSERT INTO channels (type, name, key, status, models, model_mapping, priority, "group")
 VALUES (18, 'Groq-Auto', 'TEMP_GROQ_KEY', 1, 'llama-3.3-70b-versatile,mordomo-simple,mordomo-brain', '{"mordomo-simple": "llama-3.3-70b-versatile", "mordomo-brain": "llama-3.3-70b-versatile"}', 10, 'default');
 
--- 4. Setup dos Tokens (Brain Key - SEM HÍFEN PARA COMPATIBILIDADE)
+-- 4. Cria o Token do Brain com valor fixo para o .env não precisar mudar
 DELETE FROM tokens WHERE name = 'Brain';
 INSERT INTO tokens (user_id, name, key, status, remain_quota, unlimited_quota, "group")
 VALUES (1, 'Brain', 'mordomo_master_key', 1, 1000000000, true, 'default');
