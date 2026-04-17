@@ -101,6 +101,26 @@ redis-cli -n 1 HSET mordomo:routes minha_action "meu.servico.command"
 redis-cli -n 1 HDEL mordomo:routes minha_action
 ```
 
+#### Registry dinâmico de tiers do brain (roteamento semântico)
+```
+mordomo:tiers                  →  Hash  (campo = tier semântico, valor = provider/model)
+mordomo:tiers:fallbacks        →  Hash  (campo = tier semântico, valor = provider/model fallback)
+```
+
+Escrito por: fluxo de deploy (`bootstrap.sh` / `update.sh`) via `infra/redis/seed-brain-tiers.sh`.
+Lido por: `mordomo-brain` a cada `TIER_CACHE_TTL` segundos (padrão 300s).
+Regra: seed via `HSETNX` (não sobrescreve). Ajustes operacionais podem ser feitos em runtime com `HSET`.
+
+```bash
+redis-cli -n 1 HKEYS mordomo:tiers
+redis-cli -n 1 HGET mordomo:tiers simple
+redis-cli -n 1 HSET mordomo:tiers simple "gemini/gemini-2.0-flash-exp"
+
+redis-cli -n 1 HKEYS mordomo:tiers:fallbacks
+redis-cli -n 1 HGET mordomo:tiers:fallbacks brain
+redis-cli -n 1 HSET mordomo:tiers:fallbacks brain "groq/llama-3.3-70b-versatile"
+```
+
 ---
 
 ### Estrutura de keys — db2 (`mordomo-iot-orchestrator`)

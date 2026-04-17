@@ -38,9 +38,9 @@ Responsável pela fluidez da interação de voz.
 ### 2. System Core (Cérebro Executivo)
 Responsável pela inteligência e execução.
 -   **Semantic Cache**: Intercepta inputs antes do LLM para comandos frequentes.
--   **LLM Gateway (LiteLLM)**: Gerencia chamadas para modelos de IA.
-    -   **Estratégia**: API First (OpenAI/Anthropic/Groq) -> Fallback Local.
-    -   **Modelo Local**: `qwen2.5:1.5b` (Leve e rápido para fallback).
+-   **LLM Gateway (Bifrost)**: Camada unificada OpenAI-compatible para chamadas de IA.
+  -   **Estratégia**: Brain resolve tier semantico no Redis e envia modelo real com fallback por request.
+  -   **Fallback final**: Groq direto no brain quando o gateway falha completamente.
 -   **Action Dispatcher**: Sistema universal de roteamento para módulos externos.
 -   **Skills Client**: Interface para delegar execução de código Python.
     -   **Nível 2 (Estratégico):** Envia intenções complexas para o Módulo RPA (ex: projetos de scraping).
@@ -215,7 +215,7 @@ mordomo-orchestrator/
 │   │   │   ├── README.md
 │   │   │   └── EVENT_MEMORY.md       # ✨ Documentação completa
 │   │   └── llm/
-│   │       └── service.py            # LiteLLM (Cloud + Fallback)
+│   │       └── service.py            # Gateway client (Bifrost + fallback)
 │   ├── models/                       # Pydantic Models
 │   └── services/                     # Serviços auxiliares
 ├── config/
@@ -364,7 +364,7 @@ GET /api/events/stats
 - ✅ **Event System**: Fila de prioridade para notificações assíncronas de módulos
 - ✅ **Event Memory**: Armazena eventos recentes para consultas contextuais do LLM
 - ✅ **Event Handlers**: Políticas automáticas (intruso, mensagens, temperatura, etc.)
-- ✅ **LLM Service**: LiteLLM com fallback Cloud → Local (qwen2.5:1.5b)
+- ✅ **LLM Service**: Gateway Bifrost + fallback final via Groq
 - ✅ **Semantic Cache**: FAISS para bypass de LLM em comandos frequentes
 - ⏳ **Session Controller**: Máquina de estados de conversação (a implementar)
 - ⏳ **REST API**: Endpoints para Dashboard UI (parcialmente implementado)

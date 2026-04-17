@@ -3,7 +3,7 @@
 # AslamSys — Mordomo Bootstrap
 #
 # Deploy order (dependency-based):
-#   1. infra          — NATS, Redis, Postgres, Qdrant, Consul, LiteLLM
+#   1. infra          — NATS, Redis, Postgres, Qdrant, Consul, Bifrost
 #   2. iot            — mqtt-broker, iot-orchestrator  (needs NATS + Redis)
 #   3. audio-pipeline — capture, ASR, TTS, etc.        (needs NATS)
 #   4. financas       — contas, pix                    (needs NATS + Postgres)
@@ -137,10 +137,8 @@ if [[ "$GROUP" == "all" || "$GROUP" == "infra" ]]; then
   wait_healthy "postgres" "pg_isready -U ${POSTGRES_USER:-aslam}"
   wait_healthy "redis"    "redis-cli ping"
   wait_healthy "nats"     "nats-server --help"
-  
-  # Inicializa o New-API (Go Gateway) automaticamente
-  echo "    seeding new-api configuration..."
-  sed "s/TEMP_GROQ_KEY/${GROQ_API_KEY}/g" infra/llm-gateway/setup-gateway.sql | docker exec -i postgres psql -U ${POSTGRES_USER:-aslam} -d ${POSTGRES_DB:-aslam} >/dev/null
+
+  bash infra/redis/seed-brain-tiers.sh redis
 fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "iot" ]]; then

@@ -77,7 +77,7 @@ services:
       - ./mordomo-openclaw-agent/openclaw.json:/home/node/.openclaw/openclaw.json:ro
       - openclaw-workspace:/home/node/.openclaw/workspace
     environment:
-      LITELLM_MASTER_KEY:      ${LITELLM_MASTER_KEY:?LITELLM_MASTER_KEY is required}
+      LITELLM_MASTER_KEY:      ${BIFROST_API_KEY:?BIFROST_API_KEY is required}
       OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
     networks:
       - mordomo-net

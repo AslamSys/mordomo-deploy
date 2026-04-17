@@ -587,10 +587,10 @@ print(f"Seeded {len(points)} FAQs")
 
 | Serviço | Collection | Uso | Notas |
 |---|---|---|---|
-| `mordomo-brain` | `mordomo_conversations` | RAG semântico de conversas por speaker_id | Embeddings via LiteLLM gateway |
+| `mordomo-brain` | `mordomo_conversations` | RAG semântico de conversas por speaker_id | Embeddings via Bifrost (`gemini/text-embedding-004`) |
 
 ---
 
 **Versão:** 1.0  
 **Última atualização:** 14/04/2026  
-**Embedding Model:** all-MiniLM-L6-v2 (384 dimensions)
+**Embedding Model (mordomo-brain):** gemini/text-embedding-004 (768 dimensions)

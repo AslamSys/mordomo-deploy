@@ -1,0 +1,28 @@
+{
+  "$schema": "https://www.getbifrost.ai/schema",
+  "client": {
+    "drop_excess_requests": false
+  },
+  "providers": {
+    "gemini": {
+      "keys": [
+        {
+          "name": "gemini-primary",
+          "value": "env.GEMINI_API_KEY",
+          "models": ["gemini-2.0-flash", "gemini-2.5-pro", "text-embedding-004"],
+          "weight": 1.0
+        }
+      ]
+    },
+    "groq": {
+      "keys": [
+        {
+          "name": "groq-primary",
+          "value": "env.GROQ_API_KEY",
+          "models": ["llama-3.3-70b-versatile"],
+          "weight": 1.0
+        }
+      ]
+    }
+  }
+}

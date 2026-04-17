@@ -1,184 +1,122 @@
-# Mordomo — Deploy
+# Mordomo - Deploy
 
-Repositório de produção do sistema **Mordomo**. Contém exclusivamente configurações de deploy — sem código-fonte.
+Repositorio de producao do sistema Mordomo. Este repositorio contem apenas infraestrutura e arquivos de deploy, sem codigo-fonte dos servicos.
 
 ## Estrutura
 
-```
+```text
 mordomo-deploy/
-  bootstrap.sh               ← script de deploy completo
-  .env.example               ← template de variáveis de ambiente
-  infra/                     ← NATS · Redis · Postgres · Qdrant · Consul · LiteLLM
-  brain/                     ← Brain · Orchestrator · Vault · People · Watchdog · OpenClaw
-  iot/                       ← MQTT Broker · IoT Orchestrator
-  financas/                  ← Contas · PIX
-  audio-pipeline/            ← Capture/VAD · Wake Word · ASR · TTS · Speaker ID · Bridge · LED
+  bootstrap.sh               # deploy completo por grupos
+  update.sh                  # update por grupos
+  infra/                     # NATS, Redis, Postgres, Qdrant, Consul, Bifrost
+  brain/                     # Brain, Orchestrator, Vault, People, Watchdog, OpenClaw
+  iot/                       # MQTT Broker, IoT Orchestrator
+  financas/                  # Contas, PIX
+  audio-pipeline/            # Capture/VAD, Wake Word, ASR, TTS, Speaker ID, Bridge, LED
 ```
 
-Cada serviço tem seu próprio subdiretório com `README.md`, `.env.example` e arquivos de configuração quando necessário.
-
----
-
-## Acesso Remoto
-
-### Casa do Renan (Orange Pi)
-Para acessar o hardware principal na rede local, utilize o alias configurado no SSH:
-
-```bash
-ssh mordomo
-```
-
----
-
-## Pré-requisitos
+## Pre-requisitos
 
 - Docker Engine 24+
 - Docker Compose v2
 - Git
 
----
-
 ## Deploy inicial
 
-### 1. Clonar o repositório
+### 1) Clonar o repositorio
 
 ```bash
 git clone https://github.com/AslamSys/mordomo-deploy.git
 cd mordomo-deploy
 ```
 
-### 2. Configurar variáveis de ambiente
-
-Cada grupo tem seu próprio `.env.example` ao lado do `docker-compose.yml`. Crie um `.env` para cada um:
+### 2) Criar os arquivos .env por grupo
 
 ```bash
-cp infra/.env.example          infra/.env
-cp iot/.env.example            iot/.env
+cp infra/.env.example infra/.env
+cp iot/.env.example iot/.env
 cp audio-pipeline/.env.example audio-pipeline/.env
-cp financas/.env.example       financas/.env
-cp brain/.env.example          brain/.env
+cp financas/.env.example financas/.env
+cp brain/.env.example brain/.env
 ```
 
-Edite cada arquivo e preencha os valores obrigatórios:
+### 3) Preencher variaveis obrigatorias
 
-| Grupo | Variáveis obrigatórias |
+| Grupo | Variaveis obrigatorias |
 |---|---|
-| `infra` | `POSTGRES_PASSWORD`, `LITELLM_MASTER_KEY` |
-| `iot` | `MQTT_PASSWORD` |
-| `audio-pipeline` | — (defaults funcionam para desenvolvimento) |
-| `financas` | `DATABASE_URL` (com senha real) |
-| `brain` | `VAULT_MASTER_KEY`, `PEOPLE_MASTER_KEY`, `LITELLM_MASTER_KEY` |
+| infra | POSTGRES_PASSWORD, GEMINI_API_KEY, GROQ_API_KEY |
+| iot | MQTT_PASSWORD |
+| audio-pipeline | defaults funcionam em desenvolvimento |
+| financas | DATABASE_URL |
+| brain | VAULT_MASTER_KEY, PEOPLE_MASTER_KEY |
 
-### 3. Executar o bootstrap
+Observacoes:
+
+- O gateway LLM da infraestrutura agora e Bifrost.
+- O seed de tiers do brain e responsabilidade do deploy.
+- O seed e idempotente (HSETNX), entao nao sobrescreve ajustes manuais existentes.
+- O OpenClaw ainda usa a variavel `LITELLM_MASTER_KEY` por compatibilidade; no compose ela recebe o valor de `BIFROST_API_KEY`.
+
+### 4) Rodar bootstrap
 
 ```bash
 chmod +x bootstrap.sh
 ./bootstrap.sh
 ```
 
-O script executa na seguinte ordem:
+Ordem de deploy:
 
-| Etapa | Serviços | Aguarda |
-|---|---|---|
-| 1. infra | NATS, Redis, Postgres, Qdrant, Consul, LiteLLM | Postgres + Redis + NATS healthy |
-| 2. iot | MQTT Broker, IoT Orchestrator | — |
-| 3. audio-pipeline | Capture/VAD, Wake Word, Whisper ASR, Speaker ID, Source Sep, TTS, Audio Bridge, LED | — |
-| 4. financas | Contas, PIX | — |
-| 5. brain | Brain, Orchestrator, Vault, People, Watchdog, OpenClaw | — |
+1. infra
+2. iot
+3. audio-pipeline
+4. financas
+5. brain
 
-### 4. Verificar
+## Atualizacao
+
+Atualizar tudo:
+
+```bash
+./update.sh
+```
+
+Atualizar por grupo:
+
+```bash
+./update.sh infra
+./update.sh iot
+./update.sh audio-pipeline
+./update.sh financas
+./update.sh brain
+```
+
+## Seed de tiers do brain (Redis db1)
+
+Executado automaticamente quando o grupo infra sobe (bootstrap e update):
+
+- Script: infra/redis/seed-brain-tiers.sh
+- Chaves: mordomo:tiers e mordomo:tiers:fallbacks
+
+Exemplos operacionais:
+
+```bash
+redis-cli -n 1 HGETALL mordomo:tiers
+redis-cli -n 1 HGETALL mordomo:tiers:fallbacks
+
+# Alteracao em runtime (sem restart)
+redis-cli -n 1 HSET mordomo:tiers simple "gemini/gemini-2.0-flash-exp"
+redis-cli -n 1 HSET mordomo:tiers:fallbacks brain "groq/llama-3.3-70b-versatile"
+```
+
+## Validacao rapida
 
 ```bash
 docker ps
-```
-
----
-
-## Atualização
-
-Para atualizar todos os serviços com as imagens mais recentes:
-
-```bash
-./bootstrap.sh
-```
-
-O script faz `git pull` automaticamente, puxa novas imagens e recria apenas os containers alterados.
-
-Para atualizar um grupo específico:
-
-```bash
-GROUP=brain ./bootstrap.sh
-GROUP=iot ./bootstrap.sh
-GROUP=audio-pipeline ./bootstrap.sh
-GROUP=financas ./bootstrap.sh
-GROUP=infra ./bootstrap.sh
-```
-
----
-
-## Operações comuns
-
-```bash
-# Ver status de todos os containers
-docker ps -a
-
-# Logs de um serviço
+docker logs -f llm-gateway
 docker logs -f mordomo-brain
-
-# Reiniciar um serviço
-docker compose -f brain/docker-compose.yml restart mordomo-brain
-
-# Parar tudo
-docker compose -f brain/docker-compose.yml down
-docker compose -f iot/docker-compose.yml down
-docker compose -f audio-pipeline/docker-compose.yml down
-docker compose -f financas/docker-compose.yml down
-docker compose -f infra/docker-compose.yml down
+redis-cli -n 1 HGETALL mordomo:tiers
 ```
 
----
+## Codigo-fonte dos servicos
 
-## Redes Docker
-
-| Rede | Propósito |
-|---|---|
-| `mordomo-net` | Rede principal — todos os serviços |
-| `iot-net` | Rede IoT — MQTT Broker + IoT Orchestrator |
-
-As redes são criadas automaticamente pelo `bootstrap.sh`.
-
----
-
-## Repositório de código-fonte
-
-[AslamSys/mordomo-code](https://github.com/AslamSys) — contém o código-fonte de cada serviço e os workflows de CI que geram as imagens Docker publicadas no Docker Hub.
-
----
-
-## Checklist de Validação
-
-### 1. Infraestrutura
-- [ ] **Postgres**: Conexão e persistência (healthcheck OK)
-- [ ] **Redis**: Conexão e pub/sub (healthcheck OK)
-- [ ] **NATS**: Disponibilidade do servidor e cluster (healthcheck OK)
-- [ ] **LiteLLM**: Gateway de APIs respondendo (/health)
-- [ ] **Qdrant**: Banco vetorial online
-
-### 2. IoT
-- [ ] **MQTT Broker**: Conexão com auth
-- [ ] **IoT Orchestrator**: Recebendo/Enviando mensagens NATS<->MQTT
-
-### 3. Audio Pipeline
-- [ ] **Audio Capture/VAD**: Detectando áudio (logs)
-- [ ] **Wake Word**: Reconhecendo "Aslam/Mordomo"
-- [ ] **Whisper ASR**: Transcrição funcional
-- [ ] **TTS Engine**: Geração de áudio (Piper/OpenAI)
-- [ ] **Speaker ID**: Identificação de orador operando
-- [ ] **Audio Bridge**: Switch de fluxos NATS funcionando
-
-### 4. Brain & Orchestrator
-- [ ] **Vault**: Acesso a segredos/chaves
-- [ ] **People**: Cadastro e busca de perfis
-- [ ] **Brain**: Processamento de intenções e ferramentas
-- [ ] **Orchestrator**: Roteamento de eventos global
-- [ ] **Watchdog**: Monitoramento de saúde dos serviços
+- https://github.com/AslamSys/mordomo-code

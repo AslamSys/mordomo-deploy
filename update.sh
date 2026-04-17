@@ -65,6 +65,10 @@ update_group() {
   docker compose -f "$file" pull
   docker compose -f "$file" up -d --remove-orphans
 
+  if [ "$name" = "infra" ]; then
+    bash infra/redis/seed-brain-tiers.sh redis
+  fi
+
   echo "    [$name] pronto"
 }
 

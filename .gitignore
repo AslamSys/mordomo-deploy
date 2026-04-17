@@ -4,3 +4,4 @@ iot/mqtt-broker/config/passwd
 # Ignore local environment files created on deploy
 *.env
 !*.env.example
+mordomo-code.code-workspace
