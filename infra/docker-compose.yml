@@ -101,16 +101,20 @@ services:
       - mordomo-net
 
   llm-gateway:
-    image: calciumion/new-api:latest
+    image: ghcr.io/berriai/litellm:main-v1.48.8
     container_name: llm-gateway
     restart: always
     logging: *default-logging
     ports:
       - "4000:3000"
+    volumes:
+      - ./llm-gateway/litellm-config.yaml:/app/config.yaml:ro
     environment:
-      - SQL_DSN=postgres://${POSTGRES_USER:-aslam}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-aslam}
-      - SESSION_SECRET=${LITELLM_MASTER_KEY:-mordomo-secret}
-      - TZ=America/Sao_Paulo
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - LITELLM_MASTER_KEY=${LITELLM_MASTER_KEY:-mordomo_master_key}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-aslam}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-aslam}
+    command: ["--config", "/app/config.yaml", "--port", "3000", "--detailed_debug"]
     depends_on:
       - postgres
     networks:
