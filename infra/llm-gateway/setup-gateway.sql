@@ -21,7 +21,7 @@ DELETE FROM channels WHERE name = 'Groq-Auto';
 INSERT INTO channels (type, name, key, status, models, model_mapping, priority, "group")
 VALUES (18, 'Groq-Auto', 'TEMP_GROQ_KEY', 1, 'llama-3.3-70b-versatile,mordomo-simple,mordomo-brain', '{"mordomo-simple": "llama-3.3-70b-versatile", "mordomo-brain": "llama-3.3-70b-versatile"}', 10, 'default');
 
--- 4. Setup dos Tokens (Brain Key)
-DELETE FROM tokens WHERE key = 'sk-mordomo-master-key';
+-- 4. Setup dos Tokens (Brain Key - SEM HÍFEN PARA COMPATIBILIDADE)
+DELETE FROM tokens WHERE name = 'Brain';
 INSERT INTO tokens (user_id, name, key, status, remain_quota, unlimited_quota, "group")
-VALUES (1, 'Brain', 'sk-mordomo-master-key', 1, 1000000000, true, 'default');
+VALUES (1, 'Brain', 'mordomo_master_key', 1, 1000000000, true, 'default');
