@@ -1,9 +1,16 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
 
   mordomo-audio-capture-vad:
     image: renaneunao/mordomo-audio-capture-vad:latest
     container_name: mordomo-audio-capture-vad
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     devices:
       - /dev/snd:/dev/snd
@@ -21,6 +28,7 @@ services:
     image: renaneunao/mordomo-wake-word-detector:latest
     container_name: mordomo-wake-word-detector
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     networks:
       - mordomo-net
@@ -34,6 +42,7 @@ services:
     image: renaneunao/mordomo-source-separation:latest
     container_name: mordomo-source-separation
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     networks:
       - mordomo-net
@@ -49,6 +58,7 @@ services:
     image: renaneunao/mordomo-speaker-verification:latest
     container_name: mordomo-speaker-verification
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     volumes:
       - speaker-embeddings:/data/embeddings
@@ -64,6 +74,7 @@ services:
     image: renaneunao/mordomo-whisper-asr:latest
     container_name: mordomo-whisper-asr
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     volumes:
       - whisper-models:/app/models
@@ -79,6 +90,7 @@ services:
     image: renaneunao/mordomo-speaker-id-diarization:latest
     container_name: mordomo-speaker-id-diarization
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     volumes:
       - speaker-profiles:/app/profiles
@@ -94,6 +106,7 @@ services:
     image: renaneunao/mordomo-tts-engine:latest
     container_name: mordomo-tts-engine
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     volumes:
       - tts-models:/app/models
@@ -109,6 +122,7 @@ services:
     image: renaneunao/mordomo-audio-bridge:latest
     container_name: mordomo-audio-bridge
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     ports:
       - "3100:3100"
@@ -128,6 +142,7 @@ services:
     image: renaneunao/mordomo-visual-feedback:latest
     container_name: mordomo-visual-feedback
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     privileged: true        # acesso a GPIO/LED
     networks:
