@@ -11,7 +11,7 @@ model_list:
 
   - model_name: text-embedding-3-small
     litellm_params:
-      model: gemini/text-embedding-004
+      model: gemini/embedding-001
       api_key: "os.environ/GEMINI_API_KEY"
 
 litellm_settings:
