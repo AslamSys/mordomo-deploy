@@ -2,6 +2,11 @@
 -- NEW-API MASTER BOOTSTRAP (AUTOMATED)
 -- ══════════════════════════════════════════════════════════════════════════
 
+-- 0. Correção de Tipos (Evita espaços em branco no final das chaves)
+ALTER TABLE users ALTER COLUMN username TYPE text;
+ALTER TABLE tokens ALTER COLUMN key TYPE text;
+ALTER TABLE channels ALTER COLUMN name TYPE text;
+
 -- 1. Cria o Usuário Root (Admin) se não existir
 INSERT INTO users (id, username, password, role, status, quota)
 VALUES (1, 'root', '$2a$10$K9x9rK./l.L3d.L3d.L3d.L3d.L3d.L3d.L3d.L3d.L3d.L3d.', 100, 1, 1000000000)
