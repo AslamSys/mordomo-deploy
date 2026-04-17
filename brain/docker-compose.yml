@@ -1,9 +1,16 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
 
   mordomo-brain:
     image: renaneunao/mordomo-brain:latest
     container_name: mordomo-brain
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     networks:
       - mordomo-net
@@ -17,6 +24,7 @@ services:
     image: renaneunao/mordomo-orchestrator:latest
     container_name: mordomo-orchestrator
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     networks:
       - mordomo-net
@@ -30,6 +38,7 @@ services:
     image: renaneunao/mordomo-vault:latest
     container_name: mordomo-vault
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     volumes:
       - vault-data:/data
@@ -45,6 +54,7 @@ services:
     image: renaneunao/mordomo-people:latest
     container_name: mordomo-people
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     networks:
       - mordomo-net
@@ -58,6 +68,7 @@ services:
     image: renaneunao/mordomo-system-watchdog:latest
     container_name: mordomo-system-watchdog
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -73,6 +84,7 @@ services:
     image: ghcr.io/openclaw/openclaw:latest
     container_name: mordomo-openclaw-agent
     restart: unless-stopped
+    logging: *default-logging
     volumes:
       - ./mordomo-openclaw-agent/openclaw.json:/home/node/.openclaw/openclaw.json:ro
       - openclaw-workspace:/home/node/.openclaw/workspace

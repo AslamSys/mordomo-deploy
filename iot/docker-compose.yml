@@ -1,9 +1,16 @@
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
 
   mordomo-iot-orchestrator:
     image: renaneunao/mordomo-iot-orchestrator:latest
     container_name: mordomo-iot-orchestrator
     restart: unless-stopped
+    logging: *default-logging
     env_file: .env
     networks:
       - mordomo-net
@@ -18,6 +25,7 @@ services:
     image: eclipse-mosquitto:2.0
     container_name: mordomo-iot-mqtt-broker
     restart: unless-stopped
+    logging: *default-logging
     ports:
       - "1883:1883"
       - "9001:9001"
