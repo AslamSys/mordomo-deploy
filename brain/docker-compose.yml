@@ -50,6 +50,12 @@ services:
       - vault-data:/data
     networks:
       - mordomo-net
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; exit(0 if requests.get('http://localhost:8200/health').status_code == 200 else 1)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
     deploy:
       resources:
         limits:
