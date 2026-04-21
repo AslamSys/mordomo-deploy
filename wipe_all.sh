@@ -32,13 +32,13 @@ echo "==> Removendo arquivos de configuração (.env)..."
 rm -f infra/.env iot/.env audio-pipeline/.env financas/.env brain/.env
 
 echo "==> Limpando pastas de dados persistentes..."
-# Adicione aqui qualquer pasta que não seja volume do docker mas guarde estado
-rm -rf brain/mordomo-openclaw-agent/agents
-rm -rf brain/mordomo-openclaw-agent/workspace
-rm -rf brain/mordomo-openclaw-agent/openclaw.json*
+# Usamos sudo porque os containers criam essas pastas como root
+sudo rm -rf brain/mordomo-openclaw-agent/agents
+sudo rm -rf brain/mordomo-openclaw-agent/workspace
+sudo rm -rf brain/mordomo-openclaw-agent/openclaw.json*
 
 echo "==> Limpando redes do docker..."
-docker network rm mordomo-net iot-net 2>/dev/null || true
+sudo docker network rm mordomo-net iot-net 2>/dev/null || true
 
 echo ""
 echo "✅ Mordomo Wiped. O sistema está virgem novamente."
