@@ -166,6 +166,12 @@ fi
 #fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "brain" ]]; then
+  # Cleanup residual OpenClaw state before deploy to ensure a "virgin" boot
+  # specifically agents/ folder which keeps old provider configs even if openclaw.json changes.
+  if [ -d "brain/mordomo-openclaw-agent/agents" ]; then
+    echo "  [Cleanup] Removing residual OpenClaw agents state..."
+    rm -rf "brain/mordomo-openclaw-agent/agents"
+  fi
   deploy_group "brain" "brain/docker-compose.yml"
 fi
 
