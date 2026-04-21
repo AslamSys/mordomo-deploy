@@ -39,31 +39,49 @@ else
   git pull
 fi
 
-# ── Verificar .env por grupo ──────────────────────────────────
-# Cada grupo tem seu próprio .env ao lado do docker-compose.yml
-GROUPS_WITH_ENV=(infra iot audio-pipeline financas brain)
-missing_env=0
-for g in "${GROUPS_WITH_ENV[@]}"; do
+# ── Auto-setup Environment and Secrets ────────────────────────
+generate_secret() {
+  openssl rand -hex 32
+}
+
+for g in infra iot audio-pipeline financas brain; do
   if [ ! -f "$g/.env" ]; then
-    echo "  AVISO: $g/.env não encontrado (cp $g/.env.example $g/.env)"
-    missing_env=1
+    echo "  [Auto-Setup] Criando $g/.env a partir do exemplo..."
+    cp "$g/.env.example" "$g/.env"
   fi
 done
-if [ "$missing_env" = "1" ]; then
-  echo ""
-  echo "ERROR: Falaltam arquivos .env. Crie-os antes de continuar."
-  exit 1
+
+# 1. Generate Infrastructure Secrets
+# Postgres Password
+if grep -q "POSTGRES_PASSWORD=TROQUE_ISSO" infra/.env; then
+  PG_PASS=$(generate_secret)
+  sed -i "s|POSTGRES_PASSWORD=TROQUE_ISSO|POSTGRES_PASSWORD=$PG_PASS|g" infra/.env
+  sed -i "s|changeme|$PG_PASS|g" brain/.env
+  echo "  [Auto-Gen] Senha do Postgres gerada e sincronizada."
 fi
 
-# ── Auto-generate missing secrets ─────────────────────────────
-if [ -f brain/.env ]; then
-  if grep -q "^OPENCLAW_GATEWAY_TOKEN=$" brain/.env; then
-    sed -i "s|^OPENCLAW_GATEWAY_TOKEN=$|OPENCLAW_GATEWAY_TOKEN=oc_$(openssl rand -hex 16)|g" brain/.env
-    echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN gerado"
-  elif ! grep -q "^OPENCLAW_GATEWAY_TOKEN=" brain/.env; then
-    echo "OPENCLAW_GATEWAY_TOKEN=oc_$(openssl rand -hex 16)" >> brain/.env
-    echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN adicionado"
-  fi
+# Bifrost API Key (Internal Gateway Token)
+if grep -q "^BIFROST_API_KEY=$" infra/.env; then
+  B_API_KEY="bf_$(generate_secret)"
+  sed -i "s|^BIFROST_API_KEY=$|BIFROST_API_KEY=$B_API_KEY|g" infra/.env
+  sed -i "s|^BIFROST_API_KEY=$|BIFROST_API_KEY=$B_API_KEY|g" brain/.env
+  echo "  [Auto-Gen] BIFROST_API_KEY gerado e sincronizado."
+fi
+
+# 2. Generate Brain/Vault Secrets
+if grep -q "^VAULT_MASTER_KEY=$" brain/.env; then
+  sed -i "s|^VAULT_MASTER_KEY=$|VAULT_MASTER_KEY=$(generate_secret)|g" brain/.env
+  echo "  [Auto-Gen] VAULT_MASTER_KEY gerada."
+fi
+
+if grep -q "^PEOPLE_MASTER_KEY=$" brain/.env; then
+  sed -i "s|^PEOPLE_MASTER_KEY=$|PEOPLE_MASTER_KEY=$(generate_secret)|g" brain/.env
+  echo "  [Auto-Gen] PEOPLE_MASTER_KEY gerada."
+fi
+
+if grep -q "^OPENCLAW_GATEWAY_TOKEN=$" brain/.env; then
+  sed -i "s|^OPENCLAW_GATEWAY_TOKEN=$|OPENCLAW_GATEWAY_TOKEN=oc_$(generate_secret)|g" brain/.env
+  echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN gerado."
 fi
 
 # Carrega infra/.env para variáveis usadas no wait_healthy
