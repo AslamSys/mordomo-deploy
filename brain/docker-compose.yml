@@ -109,7 +109,7 @@ services:
     restart: unless-stopped
     logging: *default-logging
     volumes:
-      - ./mordomo-openclaw-agent:/home/node/.openclaw
+      - ./mordomo-openclaw-agent:/root/.openclaw
     environment:
       OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
     ports:
