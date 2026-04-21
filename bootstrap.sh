@@ -55,6 +55,14 @@ if [ "$missing_env" = "1" ]; then
   exit 1
 fi
 
+# ── Auto-generate missing secrets ─────────────────────────────
+if [ -f brain/.env ]; then
+  if grep -q "^OPENCLAW_GATEWAY_TOKEN=$" brain/.env; then
+    sed -i "s|^OPENCLAW_GATEWAY_TOKEN=$|OPENCLAW_GATEWAY_TOKEN=oc_$(openssl rand -hex 16)|g" brain/.env
+    echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN criadobrain/.env"
+  fi
+fi
+
 # Carrega infra/.env para variáveis usadas no wait_healthy
 set -a; source infra/.env; set +a
 
