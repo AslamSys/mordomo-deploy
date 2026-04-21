@@ -59,7 +59,10 @@ fi
 if [ -f brain/.env ]; then
   if grep -q "^OPENCLAW_GATEWAY_TOKEN=$" brain/.env; then
     sed -i "s|^OPENCLAW_GATEWAY_TOKEN=$|OPENCLAW_GATEWAY_TOKEN=oc_$(openssl rand -hex 16)|g" brain/.env
-    echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN criadobrain/.env"
+    echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN gerado"
+  elif ! grep -q "^OPENCLAW_GATEWAY_TOKEN=" brain/.env; then
+    echo "OPENCLAW_GATEWAY_TOKEN=oc_$(openssl rand -hex 16)" >> brain/.env
+    echo "  [Auto-Gen] OPENCLAW_GATEWAY_TOKEN adicionado"
   fi
 fi
 

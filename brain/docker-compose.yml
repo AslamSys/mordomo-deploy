@@ -110,6 +110,8 @@ services:
     environment:
       LITELLM_MASTER_KEY:      ${BIFROST_API_KEY:?BIFROST_API_KEY is required}
       OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
+    ports:
+      - "18789:18789"
     networks:
       - mordomo-net
     deploy:
