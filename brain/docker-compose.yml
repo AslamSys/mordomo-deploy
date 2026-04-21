@@ -75,6 +75,9 @@ services:
         condition: service_healthy
     networks:
       - mordomo-net
+    volumes:
+      - ./mordomo-openclaw-agent/openclaw.json:/openclaw-config/openclaw.json
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8000:8000"
     deploy:
