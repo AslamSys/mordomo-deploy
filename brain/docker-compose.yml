@@ -105,6 +105,7 @@ services:
   mordomo-openclaw-agent:
     image: ghcr.io/openclaw/openclaw:latest
     container_name: mordomo-openclaw-agent
+    user: root
     restart: unless-stopped
     logging: *default-logging
     volumes:
