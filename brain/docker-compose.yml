@@ -109,7 +109,7 @@ services:
       - openclaw-workspace:/home/node/.openclaw/workspace
     environment:
       LITELLM_MASTER_KEY:      ${BIFROST_API_KEY:?BIFROST_API_KEY is required}
-      OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
+      OPENCLAW_GATEWAY_TOKEN:  "mordomo-dev-token-xyz"
     networks:
       - mordomo-net
     deploy:
