@@ -107,7 +107,6 @@ services:
     volumes:
       - ./mordomo-openclaw-agent:/home/node/.openclaw
     environment:
-      LITELLM_MASTER_KEY:      ${BIFROST_API_KEY:?BIFROST_API_KEY is required}
       OPENCLAW_GATEWAY_TOKEN:  ${OPENCLAW_GATEWAY_TOKEN:-}
     ports:
       - "18789:18789"

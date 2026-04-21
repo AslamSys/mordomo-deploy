@@ -1,0 +1,6 @@
+# OpenClaw runtime state — created by the container at runtime
+# Only openclaw.json (gateway config) is versioned.
+*
+!.gitignore
+!openclaw.json
+!README.md
