@@ -76,7 +76,7 @@ services:
     networks:
       - mordomo-net
     volumes:
-      - ./mordomo-openclaw-agent/openclaw.json:/openclaw-config/openclaw.json
+      - ./mordomo-openclaw-agent:/openclaw-data
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "8000:8000"
