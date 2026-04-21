@@ -11,6 +11,9 @@
       mode: "token",
       token: "${OPENCLAW_GATEWAY_TOKEN}",
     },
+    controlUi: {
+      allowedOrigins: ["*"],
+    },
   },
 
   agents: {
