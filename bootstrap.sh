@@ -185,14 +185,14 @@ fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "brain" ]]; then
   # Ensure the data directory exists and is writable before starting containers
-  mkdir -p "brain/mordomo-openclaw-agent"
-  chmod -R 777 "brain/mordomo-openclaw-agent"
+  # We use sudo because these dirs might be owned by root from previous runs
+  sudo mkdir -p "brain/mordomo-openclaw-agent"
+  sudo chmod -R 777 "brain/mordomo-openclaw-agent"
 
   # Cleanup residual OpenClaw state before deploy to ensure a "virgin" boot
-  # specifically agents/ folder which keeps old provider configs even if openclaw.json changes.
   if [ -d "brain/mordomo-openclaw-agent/agents" ]; then
     echo "  [Cleanup] Removing residual OpenClaw agents state..."
-    rm -rf "brain/mordomo-openclaw-agent/agents"
+    sudo rm -rf "brain/mordomo-openclaw-agent/agents"
   fi
   deploy_group "brain" "brain/docker-compose.yml"
 fi
