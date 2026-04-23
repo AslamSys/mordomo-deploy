@@ -24,7 +24,7 @@ if [ -f infra/.env ]; then
 fi
 
 # ── Grupos disponíveis ────────────────────────────────────────
-declare -A GROUPS=(
+declare -A SERVICE_GROUPS=(
   [infra]="infra/docker-compose.yml"
   [iot]="iot/docker-compose.yml"
   [audio-pipeline]="audio-pipeline/docker-compose.yml"
@@ -49,7 +49,7 @@ fi
 # ── Função de update ─────────────────────────────────────────
 update_group() {
   local name="$1"
-  local file="${GROUPS[$name]}"
+  local file="${SERVICE_GROUPS[$name]}"
   local envfile="$name/.env"
 
   echo ""
@@ -79,11 +79,11 @@ if [ "$TARGET" = "all" ]; then
   for group in "${ORDER[@]}"; do
     update_group "$group"
   done
-elif [[ -v GROUPS[$TARGET] ]]; then
+elif [[ -v SERVICE_GROUPS[$TARGET] ]]; then
   update_group "$TARGET"
 else
   echo "ERROR: grupo '$TARGET' desconhecido."
-  echo "Grupos disponíveis: ${!GROUPS[*]}"
+  echo "Grupos disponíveis: ${!SERVICE_GROUPS[*]}"
   exit 1
 fi
 
