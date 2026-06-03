@@ -15,6 +15,28 @@ mordomo-deploy/
   audio-pipeline/            # Capture/VAD, Wake Word, ASR, TTS, Speaker ID, Bridge, LED
 ```
 
+Cada serviço tem subdiretório com `README.md`, `.env.example` e configs quando necessário.
+
+### Testes da pipeline de áudio (Orange Pi)
+
+1. **VAD** — `audio-pipeline/.env`: `AUDIO_DEVICE_INDEX=1`, `SAMPLE_RATE=16000`, `MIC_OPEN_ON_START=true`
+2. **Wake word** — logs com frames ZMQ do VAD (`ZMQ_VAD_URL`)
+3. **Speaker verification** — após wake word estável
+4. **Whisper ASR** — transcrição pós-ativação
+
+Antes de subir `audio-pipeline`, o `bootstrap.sh` roda `scripts/release-alsa-capture.sh` (evita `arecord` travando o USB).
+
+### Deploy rápido (teste via SCP no Pi)
+
+Enquanto o CI publica imagens no Docker Hub:
+
+```bash
+./scripts/quick-deploy-service.sh mordomo-audio-capture-vad ../mordomo-audio-capture-vad
+./scripts/quick-deploy-service.sh mordomo-wake-word-detector ../mordomo-wake-word-detector
+```
+
+Fluxo: libera ALSA → SCP `Dockerfile` + `requirements.txt` + `src/` → `docker build` → `compose up --force-recreate`.
+
 ## Pre-requisitos
 
 - Docker Engine 24+

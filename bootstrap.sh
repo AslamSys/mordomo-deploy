@@ -158,6 +158,15 @@ wait_healthy() {
   echo "    $container is ready"
 }
 
+release_alsa_capture() {
+  local script="$DEPLOY_DIR/scripts/release-alsa-capture.sh"
+  if [ -x "$script" ]; then
+    "$script"
+  else
+    pkill -x arecord 2>/dev/null || true
+  fi
+}
+
 # ── Deploy ────────────────────────────────────────────────────
 GROUP="${GROUP:-all}"
 
@@ -176,6 +185,7 @@ if [[ "$GROUP" == "all" || "$GROUP" == "iot" ]]; then
 fi
 
 if [[ "$GROUP" == "all" || "$GROUP" == "audio-pipeline" ]]; then
+  release_alsa_capture
   deploy_group "audio-pipeline" "audio-pipeline/docker-compose.yml"
 fi
 
