@@ -33,9 +33,12 @@ Enquanto o CI publica imagens no Docker Hub:
 ```bash
 ./scripts/quick-deploy-service.sh mordomo-audio-capture-vad ../mordomo-audio-capture-vad
 ./scripts/quick-deploy-service.sh mordomo-wake-word-detector ../mordomo-wake-word-detector
+./scripts/quick-deploy-service.sh mordomo-audio-monitor ../mordomo-audio-monitor
 ```
 
 Fluxo: libera ALSA → SCP `Dockerfile` + `requirements.txt` + `src/` → `docker build` → `compose up --force-recreate`.
+
+**Painel ao vivo:** http://&lt;ip-orange-pi&gt;:8765 (`mordomo-audio-monitor`)
 
 ## Pre-requisitos
 

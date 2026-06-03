@@ -153,6 +153,22 @@ services:
           cpus: "0.1"
           memory: 64M
 
+  mordomo-audio-monitor:
+    image: renaneunao/mordomo-audio-monitor:latest
+    container_name: mordomo-audio-monitor
+    restart: unless-stopped
+    logging: *default-logging
+    env_file: .env
+    ports:
+      - "8765:8765"
+    networks:
+      - mordomo-net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+          memory: 128M
+
 volumes:
   speaker-profiles:
   speaker-embeddings:
